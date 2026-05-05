@@ -6,6 +6,7 @@
     <title>Website Lajnah Tahfizh</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
+    /* KODE CSS ANDA TETAP SAMA PERSIS */
     * {
         margin: 0;
         padding: 0;
@@ -839,7 +840,7 @@ Musammi' adalah para guru dan musyrif yang dengan penuh kesungguhan, kesabaran, 
     </div>
 
     <script>
-        // ========== SIDEBAR TOGGLE ==========
+        // ========== SIDEBAR TOGGLE (DIPERBAIKI UNTUK MOBILE) ==========
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -854,9 +855,12 @@ Musammi' adalah para guru dan musyrif yang dengan penuh kesungguhan, kesabaran, 
             if (isOpen) {
                 document.body.classList.add('sidebar-open');
                 if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-times"></i>';
+                // Cegah scroll body saat sidebar terbuka di mobile
+                document.body.style.overflow = 'hidden';
             } else {
                 document.body.classList.remove('sidebar-open');
                 if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                document.body.style.overflow = '';
             }
         }
         
@@ -864,6 +868,7 @@ Musammi' adalah para guru dan musyrif yang dengan penuh kesungguhan, kesabaran, 
             sidebar.classList.remove('open');
             sidebarOverlay.classList.remove('active');
             document.body.classList.remove('sidebar-open');
+            document.body.style.overflow = '';
             localStorage.setItem('sidebarState', 'closed');
             if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-bars"></i>';
         }
@@ -872,24 +877,70 @@ Musammi' adalah para guru dan musyrif yang dengan penuh kesungguhan, kesabaran, 
             const savedState = localStorage.getItem('sidebarState');
             const isDesktop = window.innerWidth > 768;
             
-            if (savedState === 'open') {
+            if (savedState === 'open' && isDesktop) {
                 sidebar.classList.add('open');
                 sidebarOverlay.classList.add('active');
                 if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-times"></i>';
-                if (isDesktop) document.body.classList.add('sidebar-open');
+                document.body.classList.add('sidebar-open');
             } else {
                 sidebar.classList.remove('open');
                 sidebarOverlay.classList.remove('active');
                 if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                if (isDesktop) document.body.classList.remove('sidebar-open');
+                document.body.classList.remove('sidebar-open');
             }
         }
         
         if (hamburgerBtn) {
-            hamburgerBtn.addEventListener('click', toggleSidebar);
+            hamburgerBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleSidebar();
+            });
         }
+        
+        // PERBAIKAN UTAMA: Event handler untuk overlay yang lebih robust
         if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeSidebar);
+            // Hapus semua event listener lama dengan clone & replace
+            const newOverlay = sidebarOverlay.cloneNode(true);
+            sidebarOverlay.parentNode.replaceChild(newOverlay, sidebarOverlay);
+            window.sidebarOverlay = newOverlay;
+            
+            // Tambahkan event listener baru untuk klik dan sentuh
+            newOverlay.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeSidebar();
+            });
+            
+            // Untuk perangkat touch, tambahkan touchstart
+            newOverlay.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeSidebar();
+            });
+        }
+        
+        // Event untuk menutup sidebar jika klik di area konten utama (opsional)
+        const mainContainer = document.getElementById('mainContainer');
+        if (mainContainer) {
+            mainContainer.addEventListener('click', function(e) {
+                // Jika sidebar terbuka dan target bukan dari sidebar atau hamburger
+                if (sidebar.classList.contains('open')) {
+                    // Cek apakah klik berasal dari dalam sidebar atau hamburger
+                    if (!sidebar.contains(e.target) && e.target !== hamburgerBtn && !hamburgerBtn.contains(e.target)) {
+                        closeSidebar();
+                    }
+                }
+            });
+            
+            // Untuk perangkat touch
+            mainContainer.addEventListener('touchstart', function(e) {
+                if (sidebar.classList.contains('open')) {
+                    if (!sidebar.contains(e.target) && e.target !== hamburgerBtn && !hamburgerBtn.contains(e.target)) {
+                        closeSidebar();
+                    }
+                }
+            });
         }
         
         window.addEventListener('resize', () => {
@@ -907,7 +958,12 @@ Musammi' adalah para guru dan musyrif yang dengan penuh kesungguhan, kesabaran, 
                     if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-bars"></i>';
                 }
                 sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
             } else {
+                // Di mobile, pastikan scroll body normal saat resize
+                if (!sidebar.classList.contains('open')) {
+                    document.body.style.overflow = '';
+                }
                 sidebarOverlay.classList.remove('active');
             }
         });
@@ -1367,6 +1423,11 @@ function loadPanduan() {
                         updateSidebarUI();
                         renderNavSidebar();
                         showSection('homeSection');
+                        // Reset sidebar state setelah login
+                        if (sidebar.classList.contains('open')) {
+                            closeSidebar();
+                        }
+                        document.body.style.overflow = '';
                     }, 1000);
                 } else {
                     completeLoading(false);
@@ -1389,6 +1450,11 @@ function loadPanduan() {
             renderNavSidebar();
             showSection('homeSection');
             hideLoginFormSidebar();
+            // Reset sidebar state setelah logout
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            }
+            document.body.style.overflow = '';
         }
         
         function updateSidebarUI() {
