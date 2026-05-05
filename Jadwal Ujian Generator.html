@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Jadwal Ujian Qur'an</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #e8f5e9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        h1 { text-align: center; color: #2e7d32; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
+        
+        .form-group { display: inline-block; margin-right: 20px; margin-bottom: 15px; vertical-align: top; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; font-size: 13px; }
+        select, input, button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 13px;
+        }
+        select, input { width: 200px; }
+        button {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1b5e20; }
+        .btn-excel { background: #1b5e20; margin-left: 10px; }
+        .btn-excel:hover { background: #0d3b0f; }
+        
+        .alert-info, .alert-success, .alert-warning, .alert-danger {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid;
+        }
+        .alert-info { background: #e3f2fd; color: #1565c0; border-left-color: #2196f3; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border-left-color: #4caf50; }
+        .alert-warning { background: #fff8e1; color: #f57c00; border-left-color: #ff9800; }
+        .alert-danger { background: #ffebee; color: #c62828; border-left-color: #f44336; }
+        
+        .table-wrapper { overflow-x: auto; margin: 20px 0; border: 1px solid #ddd; border-radius: 8px; }
+        table { border-collapse: collapse; width: 100%; font-size: 12px; }
+        th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: center; vertical-align: middle; }
+        th { background: #2e7d32; color: white; font-weight: bold; }
+        .sub-header { background: #66bb6a; }
+        .santri-row { background: #fafafa; }
+        .penguji-row { background: #fff8e1; }
+        
+        .kategori-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        .kategori-table th, .kategori-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .kategori-table th { background: #ff9800; color: white; }
+        
+        .daftar-kategori { background: #fafafa; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px solid #ddd; }
+        .juz-list { font-size: 11px; color: #666; font-family: monospace; }
+        hr { margin: 20px 0; border: none; border-top: 1px solid #ddd; }
+        .config-box { background: #e8f5e9; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .header-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+        .beban-penguji-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        .beban-penguji-table th, .beban-penguji-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .beban-penguji-table th { background: #2e7d32; color: white; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📖 Jadwal Ujian Qur'an</h1>
+    <div class="subtitle">Lajnah Tahfizh Ma'had Tamaamul Minnah Bengle</div>
+
+    <div class="config-box">
+        <h4 style="margin-bottom: 10px;">📊 Konfigurasi</h4>
+        <div class="form-group">
+            <label>📑 Pilih Sheet (Ujian)</label>
+            <select id="sheetSelect" style="width:250px;">
+                <option value="">-- Muat daftar sheet dulu --</option>
+            </select>
+            <button id="loadSheetsBtn" style="margin-left:10px;">🔄 Muat</button>
+        </div>
+    </div>
+
+    <hr>
+
+    <div>
+        <h2>🎯 Parameter Jadwal</h2>
+        <div class="form-group"><label>📅 Jumlah Hari</label><input type="number" id="jumlahHari" min="1" value="6"></div>
+        <div class="form-group"><label>⏰ Sesi per Hari</label><input type="number" id="jumlahSesi" min="1" value="6"></div>
+        <div class="form-group"><label>👨‍🏫 Jumlah Penguji</label><input type="number" id="jumlahPenguji" min="1" value="6"></div>
+        <div class="form-group"><label>⚖️ Maks Juz per Penguji</label><input type="number" id="maxJuzPerPenguji" value="" placeholder="Kosong"></div>
+        <div><button id="generateBtn">🎯 Generate Jadwal</button></div>
+    </div>
+
+    <div id="errorArea"></div>
+    <div id="infoArea"></div>
+    <div id="bebanPengujiArea"></div>
+    <div id="jadwalArea"></div>
+    <div id="kategoriArea"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0t-8icF4bIYLzkTSa-op2cJSUfAGQO4Hyy_SMNuiMrAgxDgzu5XcoSytpJd0O3Ldr/exec'; // GANTI DENGAN URL ASLI
+    
+    let rawSantriList = [];
+    let lastGenerateData = null;
+
+    function getPengujiName(index) { return String.fromCharCode(65 + index); }
+    
+    function extractAngkaKelas(kelas) {
+        const match = String(kelas).match(/\d+/);
+        return match ? parseInt(match[0]) : 0;
+    }
+    
+    function trimSheetName(name) {
+        if (name.length > 31) {
+            return name.substring(0, 28) + '...';
+        }
+        return name;
+    }
+    
+    async function loadSheets() {
+        const info = document.getElementById('infoArea');
+        info.innerHTML = '<div class="alert-info">⏳ Mengambil daftar sheet...</div>';
+        try {
+            const res = await fetch(`${APPS_SCRIPT_URL}?action=getSheets`);
+            if (!res.ok) throw new Error(`Gagal: ${res.statusText}`);
+            const result = await res.json();
+            if (result.error) throw new Error(result.error);
+            const select = document.getElementById('sheetSelect');
+            select.innerHTML = '<option value="">-- Pilih Sheet --</option>';
+            for (let name of result.sheets) select.innerHTML += `<option value="${name}">${name}</option>`;
+            info.innerHTML = `<div class="alert-success">✅ Berhasil memuat ${result.sheets.length} sheet.</div>`;
+        } catch (err) {
+            document.getElementById('errorArea').innerHTML = `<div class="alert-warning">❌ Error: ${err.message}</div>`;
+            info.innerHTML = '';
+        }
+    }
+
+    async function bacaDataSheet(sheetName) {
+        const info = document.getElementById('infoArea');
+        info.innerHTML = '<div class="alert-info">⏳ Membaca data sheet...</div>';
+        try {
+            const res = await fetch(`${APPS_SCRIPT_URL}?action=getData&sheetName=${encodeURIComponent(sheetName)}`);
+            if (!res.ok) throw new Error(`Gagal: ${res.statusText}`);
+            const result = await res.json();
+            if (result.error) throw new Error(result.error);
+            return result.data;
+        } catch (err) {
+            document.getElementById('errorArea').innerHTML = `<div class="alert-warning">❌ Error: ${err.message}</div>`;
+            info.innerHTML = '';
+            return null;
+        }
+    }
+
+function parseDataSheet(rows) {
+    if (!rows || rows.length < 2) throw new Error("Data kosong");
+    const header = rows[0];
+    let idxNama = -1, idxKelas = -1;
+    const idxJuz = {};
+    for (let i = 0; i < header.length; i++) {
+        const h = String(header[i]).trim();
+        if (h === "Nama") idxNama = i;
+        else if (h === "Kelas") idxKelas = i;
+        else if (!isNaN(parseInt(h)) && parseInt(h) >= 1 && parseInt(h) <= 30) idxJuz[parseInt(h)] = i;
+    }
+    if (idxNama === -1) throw new Error("Kolom Nama tidak ditemukan");
+    
+    const santri = [];
+    for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row[idxNama] || String(row[idxNama]).trim() === "") continue;
+        const nama = String(row[idxNama]).trim();
+        const kelas = idxKelas >= 0 ? String(row[idxKelas] || "").trim() : "";
+        const juzList = [];
+        for (let j = 1; j <= 30; j++) {
+            if (idxJuz[j] !== undefined && row[idxJuz[j]] !== undefined && row[idxJuz[j]] !== "") {
+                const val = parseInt(row[idxJuz[j]]);
+                if (val === j) juzList.push(j);
+            }
+        }
+        juzList.sort((a,b) => a - b);
+        santri.push({ nama, kelas, totalJuz: juzList.length, juzList, pengujiAssign: null });
+    }
+    
+    // ========== URUTAN BERDASARKAN KELAS (TERBESAR KE TERKECIL) ==========
+    // Fungsi untuk mengekstrak angka dari kelas (misal: "6A" -> 6, "3B" -> 3)
+    function extractAngkaKelas(kelas) {
+        const match = String(kelas).match(/\d+/);
+        return match ? parseInt(match[0]) : 0;
+    }
+    
+    // Urutkan: Kelas terbesar dulu, jika sama urutkan berdasarkan nama
+    santri.sort((a,b) => {
+        const kelasA = extractAngkaKelas(a.kelas);
+        const kelasB = extractAngkaKelas(b.kelas);
+        if (kelasA !== kelasB) return kelasB - kelasA; // besar ke kecil
+        return a.nama.localeCompare(b.nama); // jika kelas sama, urut nama A-Z
+    });
+    
+    return santri;
+}
+    function distribusiJuzPerSantri(santri, hari) {
+        const juzList = [...santri.juzList];
+        const total = juzList.length;
+        const perHari = Array(hari).fill().map(() => []);
+        
+        if (total === 0) return perHari;
+        
+        if (total <= hari) {
+            for (let i = 0; i < total; i++) {
+                perHari[i].push(juzList[i]);
+            }
+        } else {
+            let base = Math.floor(total / hari);
+            let sisa = total % hari;
+            const perHariCount = Array(hari).fill(base);
+            for (let i = 0; i < sisa; i++) {
+                perHariCount[hari - 1 - i]++;
+            }
+            
+            let pointer = 0;
+            for (let h = 0; h < hari; h++) {
+                for (let k = 0; k < perHariCount[h]; k++) {
+                    if (pointer < juzList.length) {
+                        perHari[h].push(juzList[pointer]);
+                        pointer++;
+                    }
+                }
+            }
+        }
+        return perHari;
+    }
+
+    function assignPengujiPrioritas(santriList, pengujiCount, maxJuzTotal) {
+        const santriBanyak = santriList.filter(s => s.totalJuz > 2).sort((a,b) => b.totalJuz - a.totalJuz);
+        const santriSedikit = santriList.filter(s => s.totalJuz <= 2).sort((a,b) => b.totalJuz - a.totalJuz);
+        
+        let beban = Array(pengujiCount).fill(0);
+        let assigned = Array(pengujiCount).fill().map(() => []);
+        
+        for (const s of santriBanyak) {
+            let minIdx = 0;
+            for (let i = 1; i < pengujiCount; i++) {
+                if (beban[i] < beban[minIdx]) minIdx = i;
+            }
+            if (maxJuzTotal && beban[minIdx] + s.totalJuz > maxJuzTotal) {
+                s.pengujiAssign = null;
+                continue;
+            }
+            s.pengujiAssign = minIdx;
+            beban[minIdx] += s.totalJuz;
+            assigned[minIdx].push(s);
+        }
+        
+        let totalJuz = beban.reduce((a,b) => a + b, 0);
+        let targetIdeal = Math.ceil(totalJuz / pengujiCount);
+        
+        for (let i = 0; i < pengujiCount; i++) {
+            if (beban[i] <= targetIdeal) continue;
+            let selisih = beban[i] - targetIdeal;
+            let santriPenguji = [...assigned[i]].sort((a,b) => a.totalJuz - b.totalJuz);
+            for (let s of santriPenguji) {
+                if (selisih <= 0) break;
+                for (let j = 0; j < pengujiCount; j++) {
+                    if (j === i) continue;
+                    if (beban[j] + s.totalJuz <= targetIdeal) {
+                        const index = assigned[i].indexOf(s);
+                        if (index !== -1) assigned[i].splice(index, 1);
+                        assigned[j].push(s);
+                        beban[i] -= s.totalJuz;
+                        beban[j] += s.totalJuz;
+                        s.pengujiAssign = j;
+                        selisih -= s.totalJuz;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        for (const s of santriSedikit) {
+            let minIdx = 0;
+            for (let i = 1; i < pengujiCount; i++) {
+                if (beban[i] < beban[minIdx]) minIdx = i;
+            }
+            if (maxJuzTotal && beban[minIdx] + s.totalJuz > maxJuzTotal) {
+                s.pengujiAssign = null;
+                continue;
+            }
+            s.pengujiAssign = minIdx;
+            beban[minIdx] += s.totalJuz;
+            assigned[minIdx].push(s);
+        }
+        
+        let tidakDapat = santriList.filter(s => s.pengujiAssign === null && s.totalJuz > 0);
+        
+        return { santriList: santriList, bebanPenguji: beban, assigned: assigned, santriTidakDapat: tidakDapat };
+    }
+
+    function jadwalkanFleksibel(juzPerHariPerSantri, sesi, pengujiCount, hariCount) {
+        const jadwal = Array(hariCount).fill().map(() => Array(sesi).fill().map(() => Array(pengujiCount).fill(null)));
+        const gagal = new Map();
+        const maxTanpaDeret = Math.ceil(sesi / 2);
+        const juzSudahTerjadwal = new Set();
+        const kapasitasTersisa = Array(hariCount).fill().map(() => Array(pengujiCount).fill(sesi));
+        
+        let semuaJuz = [];
+        for (const s of juzPerHariPerSantri) {
+            if (s.pengujiAssign === null) continue;
+            for (let h = 0; h < hariCount; h++) {
+                for (const juz of s.juzPerHari[h]) {
+                    semuaJuz.push({
+                        santri: s.nama,
+                        obj: s,
+                        juz: juz,
+                        penguji: s.pengujiAssign,
+                        key: s.nama + "|" + juz,
+                        originalHari: h
+                    });
+                }
+            }
+        }
+        
+        semuaJuz.sort((a,b) => {
+            const aCount = juzPerHariPerSantri.find(s => s.nama === a.santri)?.totalJuz || 0;
+            const bCount = juzPerHariPerSantri.find(s => s.nama === b.santri)?.totalJuz || 0;
+            return bCount - aCount;
+        });
+        
+        const lastSesiPerHari = new Map();
+        
+        for (const u of semuaJuz) {
+            if (juzSudahTerjadwal.has(u.key)) continue;
+            
+            let hariOptions = [u.originalHari];
+            for (let h = 0; h < hariCount; h++) {
+                if (h !== u.originalHari) hariOptions.push(h);
+            }
+            
+            let placed = false;
+            let alasan = "";
+            
+            for (const h of hariOptions) {
+                if (kapasitasTersisa[h][u.penguji] <= 0) {
+                    alasan = "Kapasitas penguji " + getPengujiName(u.penguji) + " di hari " + (h+1) + " penuh";
+                    continue;
+                }
+                
+                const lastKey = u.santri + "|" + u.penguji + "|" + h;
+                const lastSesi = lastSesiPerHari.get(lastKey);
+                const juzCountHariIni = juzPerHariPerSantri.find(s => s.nama === u.santri)?.juzPerHari[h]?.length || 0;
+                const bolehBerderet = (juzCountHariIni > maxTanpaDeret);
+                
+                let slotDitemukan = -1;
+                for (let s = 0; s < sesi; s++) {
+                    if (!bolehBerderet && lastSesi !== undefined && Math.abs(lastSesi - s) === 1) continue;
+                    if (jadwal[h][s][u.penguji] === null) {
+                        slotDitemukan = s;
+                        break;
+                    }
+                }
+                
+                if (slotDitemukan !== -1) {
+                    jadwal[h][slotDitemukan][u.penguji] = {
+                        santri: u.santri,
+                        juz: u.juz,
+                        kelas: u.obj.kelas
+                    };
+                    lastSesiPerHari.set(lastKey, slotDitemukan);
+                    kapasitasTersisa[h][u.penguji]--;
+                    juzSudahTerjadwal.add(u.key);
+                    placed = true;
+                    break;
+                } else {
+                    alasan = "Tidak ada slot sesi di hari " + (h+1) + " untuk penguji " + getPengujiName(u.penguji);
+                }
+            }
+            
+            if (!placed && !gagal.has(u.santri)) {
+                gagal.set(u.santri, u.santri + " - Juz " + u.juz + " gagal: " + alasan);
+            }
+        }
+        
+        return { jadwal: jadwal, santriGagal: gagal };
+    }
+
+function tampilkanJadwal(jadwal, santriList, hari, sesi, pengujiCount) {
+    if (!santriList || santriList.length === 0) return '<p>Tidak ada data jadwal.</p>';
+    let html = '<div class="table-wrapper"><table><thead>';
+    
+    // BARIS 1: Header Hari dengan rowspan untuk No, Nama, Kelas, Juz
+    html += '<tr>';
+    html += '<th rowspan="2">No</th>';
+    html += '<th rowspan="2">Nama</th>';
+    html += '<th rowspan="2">Kelas</th>';
+    html += '<th rowspan="2">Juz</th>';
+    for (let h = 0; h < hari; h++) {
+        html += '<th colspan="' + sesi + '">Hari ' + (h+1) + '</th>';
+    }
+    html += '</tr>';
+    
+    // BARIS 2: Sub-header Sesi (LANGSUNG mulai kolom sesi, tanpa kolom untuk No,Nama,Kelas,Juz)
+    html += '<tr>';
+    for (let h = 0; h < hari; h++) {
+        for (let s = 0; s < sesi; s++) {
+            html += '<th class="sub-header">' + (s+1) + '</th>';
+        }
+    }
+    html += '</tr>';
+    html += '</thead><tbody>';
+    
+    // Data santri
+    for (let i = 0; i < santriList.length; i++) {
+        const s = santriList[i];
+        
+        // Baris Juz
+        html += '<tr class="santri-row">';
+        html += '<td>' + (i+1) + '</td>';
+        html += '<td>' + s.nama + '</td>';
+        html += '<td>' + s.kelas + '</td>';
+        html += '<td>' + s.totalJuz + '</td>';
+        
+        for (let h = 0; h < hari; h++) {
+            for (let ses = 0; ses < sesi; ses++) {
+                let ujian = null;
+                if (jadwal[h] && jadwal[h][ses]) {
+                    for (let p = 0; p < pengujiCount; p++) {
+                        if (jadwal[h][ses][p] && jadwal[h][ses][p].santri === s.nama) {
+                            ujian = jadwal[h][ses][p];
+                            break;
+                        }
+                    }
+                }
+                html += '<td>' + (ujian ? ujian.juz : '') + '</td>';
+            }
+        }
+        html += '</tr>';
+        
+        // Baris Penguji
+        html += '<tr class="penguji-row">';
+        // 4 kolom pertama kosong (No, Nama, Kelas, Juz)
+        html += '<td></td><td></td><td></td><td></td>';
+        for (let h = 0; h < hari; h++) {
+            for (let ses = 0; ses < sesi; ses++) {
+                let peng = '';
+                if (s.pengujiAssign !== null && jadwal[h] && jadwal[h][ses]) {
+                    for (let p = 0; p < pengujiCount; p++) {
+                        if (jadwal[h][ses][p] && jadwal[h][ses][p].santri === s.nama) {
+                            peng = getPengujiName(p);
+                            break;
+                        }
+                    }
+                }
+                html += '<td>' + peng + '</td>';
+            }
+        }
+        html += '</tr>';
+    }
+    
+    html += '</tbody></table></div>';
+    return html;
+}
+function tampilkanBebanPenguji(bebanPenguji, assigned, pengujiCount, maxJuzTotal) {
+    let totalJuz = bebanPenguji.reduce((a,b) => a + b, 0);
+    let targetIdeal = Math.ceil(totalJuz / pengujiCount);
+    let selisihMax = Math.max(...bebanPenguji) - Math.min(...bebanPenguji);
+    
+    let html = '<div class="alert-info" style="margin-top:20px;">';
+    html += '<div class="header-actions">';
+    html += '<h4>📊 Beban Penguji (Total Juz per Periode Ujian)</h4>';
+    html += '<button class="btn-excel" id="downloadBebanPengujiBtn">📥 Download Excel</button>';
+    html += '</div>';
+    html += '<table class="beban-penguji-table"><thead>';
+    html += '<tr><th>Penguji</th><th>Total Juz</th><th>Santri</th><th>Selisih dari Ideal (' + targetIdeal + ')</th></tr>';
+    html += '</thead><tbody>';
+    
+    for (let i = 0; i < pengujiCount; i++) {
+        let selisih = bebanPenguji[i] - targetIdeal;
+        let selisihText = selisih === 0 ? '✅ Rata' : (selisih > 0 ? '+' + selisih : selisih.toString());
+        let warna = selisih === 0 ? 'style="color:green"' : (selisih > 0 ? 'style="color:red"' : 'style="color:orange"');
+        
+        let santriList = assigned[i] || [];
+        let santriText = santriList.map(s => s.nama + ' (' + s.totalJuz + ')').join(', ');
+        if (santriText === '') santriText = '-';
+        
+        html += '<tr>';
+        html += '<td><strong>' + getPengujiName(i) + '</strong></td>';
+        html += '<td>' + bebanPenguji[i] + ' juz</td>';
+        html += '<td style="text-align:left; font-size:11px;">' + santriText + '</td>';
+        html += '<td ' + warna + '>' + selisihText + '</td>';
+        html += '</tr>';
+    }
+    html += '<tr style="background:#e0e0e0;"><td><strong>Total</strong></td><td colspan="3"><strong>' + totalJuz + ' juz</strong></td></tr>';
+    html += '<tr><td colspan="4" style="text-align:center; font-weight:bold;">📌 Selisih maksimal antar penguji: ' + selisihMax + ' juz' + (selisihMax <= 1 ? ' ✅ (Sudah Rata)' : ' ⚠️ (Belum Rata)') + '</td></tr>';
+    html += '</tbody></table></div>';
+    
+    return html;
+}
+    function tampilkanKategori(tidakIkut, tidakDapat, gagalMap, penguji, maxJuz) {
+        let html = '';
+        
+        if (tidakIkut && tidakIkut.length > 0) {
+            html += '<div class="daftar-kategori" id="kategoriTidakIkut">';
+            html += '<div class="header-actions"><h3>❌ Santri Tidak Ikut Ujian (Juz = 0)</h3>';
+            html += '<button class="btn-excel" id="downloadTidakIkutBtn">📥 Download Excel</button></div>';
+            html += '<table class="kategori-table"><thead><tr><th>No</th><th>Nama</th><th>Kelas</th></tr></thead><tbody>';
+            for (let i = 0; i < tidakIkut.length; i++) {
+                html += '<tr>';
+                html += '<td>' + (i+1) + '</td>';
+                html += '<td>' + tidakIkut[i].nama + '</td>';
+                html += '<td>' + tidakIkut[i].kelas + '</td>';
+                html += '</tr>';
+            }
+            html += '</tbody></table></div>';
+        }
+        
+        if (tidakDapat && tidakDapat.length > 0) {
+            html += '<div class="daftar-kategori" id="kategoriTidakDapat">';
+            html += '<div class="header-actions"><h3>⚠️ Santri Tidak Mendapat Penguji</h3>';
+            html += '<button class="btn-excel" id="downloadTidakDapatBtn">📥 Download Excel</button></div>';
+            html += '<table class="kategori-table"><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Juz</th><th>Juz Spesifik</th><th>Penyebab</th></tr></thead><tbody>';
+            for (let i = 0; i < tidakDapat.length; i++) {
+                html += '<tr>';
+                html += '<td>' + (i+1) + '</td>';
+                html += '<td>' + tidakDapat[i].nama + '</td>';
+                html += '<td>' + tidakDapat[i].kelas + '</td>';
+                html += '<td>' + tidakDapat[i].totalJuz + '</td>';
+                html += '<td class="juz-list">' + tidakDapat[i].juzList.join(', ') + '</td>';
+                html += '<td style="color:#c62828;">Melebihi batas maksimal juz per penguji (' + penguji + ' penguji × ' + (maxJuz || '∞') + ' juz)</td>';
+                html += '</tr>';
+            }
+            html += '</tbody></tr></div>';
+        }
+        
+        if (gagalMap && gagalMap.size > 0) {
+            html += '<div class="daftar-kategori" id="kategoriGagal">';
+            html += '<div class="header-actions"><h3>⚠️ Santri Gagal Dijadwalkan (' + gagalMap.size + ' santri)</h3>';
+            html += '<button class="btn-excel" id="downloadGagalBtn">📥 Download Excel</button></div>';
+            html += '<table class="kategori-table"><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Juz</th><th>Juz Spesifik</th><th>Penyebab</th><tr></thead><tbody>';
+            let i = 0;
+            for (let [nama, alasan] of gagalMap) {
+                const s = rawSantriList.find(x => x.nama === nama) || { nama: nama, kelas: '-', totalJuz: 0, juzList: [] };
+                html += '<tr>';
+                html += '<td>' + (i+1) + '</td>';
+                html += '<td>' + s.nama + '</td>';
+                html += '<td>' + s.kelas + '</td>';
+                html += '<td>' + s.totalJuz + '</td>';
+                html += '<td class="juz-list">' + s.juzList.join(', ') + '</td>';
+                html += '<td style="color:#c62828;">' + alasan + '</td>';
+                html += '</tr>';
+                i++;
+            }
+            html += '</tbody></table></div>';
+        }
+        
+        return html;
+    }
+
+    function downloadKategoriExcel(kategori) {
+        if (!lastGenerateData) return;
+        
+        let data = [];
+        let sheetName = "";
+        
+        if (kategori === 'tidakIkut') {
+            data = lastGenerateData.tidakIkut;
+            sheetName = 'Santri Tidak Ikut';
+        } else if (kategori === 'tidakDapat') {
+            data = lastGenerateData.tidakDapat;
+            sheetName = 'Santri Tidak Dapat Penguji';
+        } else if (kategori === 'gagal') {
+            data = lastGenerateData.gagalList || [];
+            sheetName = 'Santri Gagal Dijadwalkan';
+        }
+        
+        if (!data.length) return;
+        
+        sheetName = trimSheetName(sheetName);
+        
+        let excelData = [];
+        if (kategori === 'tidakIkut') {
+            excelData = [['No', 'Nama', 'Kelas']];
+            data.forEach(function(item, i) {
+                excelData.push([i+1, item.nama, item.kelas]);
+            });
+        } else {
+            excelData = [['No', 'Nama', 'Kelas', 'Jumlah Juz', 'Juz Spesifik', 'Penyebab']];
+            data.forEach(function(item, i) {
+                let penyebab = (kategori === 'tidakDapat') ? 'Melebihi batas maksimal juz per penguji' : item.alasan;
+                excelData.push([i+1, item.nama, item.kelas, item.totalJuz, item.juzList.join(', '), penyebab]);
+            });
+        }
+        
+        const ws = XLSX.utils.aoa_to_sheet(excelData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        XLSX.writeFile(wb, sheetName + '.xlsx');
+    }
+
+    function downloadJadwalExcel() {
+        if (!lastGenerateData) {
+            alert("Belum ada data jadwal. Generate terlebih dahulu!");
+            return;
+        }
+        
+        const data = lastGenerateData;
+        const jadwal = data.jadwal;
+        const santriList = data.berhasil;
+        const hari = data.hari;
+        const sesi = data.sesi;
+        const pengujiCount = data.penguji;
+        let sheetName = data.sheetName;
+        
+        sheetName = trimSheetName(sheetName);
+        
+        const excelData = [];
+        
+        const row1 = ['No', 'Nama', 'Kelas', 'Juz'];
+        for (let h = 0; h < hari; h++) {
+            for (let s = 0; s < sesi; s++) {
+                row1.push(s === 0 ? 'Hari ' + (h+1) : '');
+            }
+        }
+        excelData.push(row1);
+        
+        const row2 = ['', '', '', ''];
+        for (let h = 0; h < hari; h++) {
+            for (let s = 0; s < sesi; s++) {
+                row2.push((s+1).toString());
+            }
+        }
+        excelData.push(row2);
+        
+        for (let i = 0; i < santriList.length; i++) {
+            const s = santriList[i];
+            
+            const rowJuz = [i+1, s.nama, s.kelas, s.totalJuz];
+            for (let h = 0; h < hari; h++) {
+                for (let ses = 0; ses < sesi; ses++) {
+                    let ujian = null;
+                    if (jadwal[h] && jadwal[h][ses]) {
+                        for (let p = 0; p < pengujiCount; p++) {
+                            if (jadwal[h][ses][p] && jadwal[h][ses][p].santri === s.nama) {
+                                ujian = jadwal[h][ses][p];
+                                break;
+                            }
+                        }
+                    }
+                    rowJuz.push(ujian ? ujian.juz : '');
+                }
+            }
+            excelData.push(rowJuz);
+            
+            const rowPeng = ['', '', '', ''];
+            for (let h = 0; h < hari; h++) {
+                for (let ses = 0; ses < sesi; ses++) {
+                    let peng = '';
+                    if (s.pengujiAssign !== null && jadwal[h] && jadwal[h][ses]) {
+                        for (let p = 0; p < pengujiCount; p++) {
+                            if (jadwal[h][ses][p] && jadwal[h][ses][p].santri === s.nama) {
+                                peng = getPengujiName(p);
+                                break;
+                            }
+                        }
+                    }
+                    rowPeng.push(peng);
+                }
+            }
+            excelData.push(rowPeng);
+        }
+        
+        const ws = XLSX.utils.aoa_to_sheet(excelData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        XLSX.writeFile(wb, sheetName + '.xlsx');
+    }
+
+async function generateJadwal() {
+    const sheetName = document.getElementById('sheetSelect').value;
+    if (!sheetName) { alert("Pilih sheet terlebih dahulu!"); return; }
+    
+    const rows = await bacaDataSheet(sheetName);
+    if (!rows) return;
+    
+    let santri;
+    try { santri = parseDataSheet(rows); rawSantriList = santri; } 
+    catch (err) { document.getElementById('errorArea').innerHTML = '<div class="alert-warning">❌ ' + err.message + '</div>'; return; }
+    
+    const hari = parseInt(document.getElementById('jumlahHari').value);
+    const sesi = parseInt(document.getElementById('jumlahSesi').value);
+    const penguji = parseInt(document.getElementById('jumlahPenguji').value);
+    const maxJuz = document.getElementById('maxJuzPerPenguji').value ? parseInt(document.getElementById('maxJuzPerPenguji').value) : null;
+    
+    const tidakIkut = santri.filter(s => s.totalJuz === 0);
+    const ikut = santri.filter(s => s.totalJuz > 0);
+    
+    const { santriList: withPenguji, bebanPenguji, assigned, santriTidakDapat } = assignPengujiPrioritas(ikut, penguji, maxJuz);
+    
+    // ========== PROSES INTERNAL: URUTAN BERDASARKAN JUZ TERBESAR (OPTIMAL) ==========
+    const sorted = [...withPenguji].sort((a,b) => b.totalJuz - a.totalJuz);
+    const juzPerHari = [];
+    for (const s of sorted) {
+        const perHari = distribusiJuzPerSantri(s, hari);
+        juzPerHari.push({ 
+            nama: s.nama, 
+            kelas: s.kelas, 
+            totalJuz: s.totalJuz, 
+            juzList: s.juzList,
+            pengujiAssign: s.pengujiAssign, 
+            juzPerHari: perHari 
+        });
+    }
+    
+    const { jadwal, santriGagal } = jadwalkanFleksibel(juzPerHari, sesi, penguji, hari);
+    const berhasil = juzPerHari.filter(s => !santriGagal.has(s.nama));
+    
+    // ========== TAMPILAN: URUTAN BERDASARKAN KELAS TERBESAR ==========
+    function extractAngkaKelas(kelas) {
+        const match = String(kelas).match(/\d+/);
+        return match ? parseInt(match[0]) : 0;
+    }
+    
+    berhasil.sort((a,b) => {
+        const kelasA = extractAngkaKelas(a.kelas);
+        const kelasB = extractAngkaKelas(b.kelas);
+        if (kelasA !== kelasB) return kelasB - kelasA;
+        return a.nama.localeCompare(b.nama);
+    });
+    
+    const gagalList = [];
+    for (let [nama, alasan] of santriGagal) {
+        const s = rawSantriList.find(x => x.nama === nama) || { nama: nama, kelas: '-', totalJuz: 0, juzList: [] };
+        gagalList.push({ 
+            nama: s.nama, 
+            kelas: s.kelas, 
+            totalJuz: s.totalJuz, 
+            juzList: s.juzList, 
+            alasan: alasan 
+        });
+    }
+    
+    lastGenerateData = {
+        tidakIkut: tidakIkut,
+        tidakDapat: santriTidakDapat,
+        gagalList: gagalList,
+        jadwal: jadwal, 
+        berhasil: berhasil, 
+        hari: hari, 
+        sesi: sesi, 
+        penguji: penguji, 
+        sheetName: 'Jadwal_' + sheetName,
+        maxJuz: maxJuz,
+        assigned: assigned,
+        bebanPenguji: bebanPenguji
+    };
+    
+    // Tampilkan beban penguji
+    document.getElementById('bebanPengujiArea').innerHTML = tampilkanBebanPenguji(bebanPenguji, assigned, penguji, maxJuz);
+function downloadBebanPengujiExcel() {
+    if (!lastGenerateData) {
+        alert("Belum ada data. Generate jadwal terlebih dahulu!");
+        return;
+    }
+    
+    const data = lastGenerateData;
+    const bebanPenguji = data.bebanPenguji;
+    const assigned = data.assigned;
+    const pengujiCount = data.penguji;
+    let sheetName = 'Beban_Penguji_' + data.sheetName.replace('Jadwal_', '');
+    
+    sheetName = trimSheetName(sheetName);
+    
+    let totalJuz = bebanPenguji.reduce((a,b) => a + b, 0);
+    let targetIdeal = Math.ceil(totalJuz / pengujiCount);
+    
+    const excelData = [['Penguji', 'Total Juz', 'Santri (Juz)', 'Selisih dari Ideal (' + targetIdeal + ')']];
+    
+    for (let i = 0; i < pengujiCount; i++) {
+        let selisih = bebanPenguji[i] - targetIdeal;
+        let selisihText = selisih === 0 ? 'Rata' : (selisih > 0 ? '+' + selisih : selisih.toString());
+        
+        let santriList = assigned[i] || [];
+        let santriText = santriList.map(s => s.nama + ' (' + s.totalJuz + ')').join(', ');
+        if (santriText === '') santriText = '-';
+        
+        excelData.push([
+            getPengujiName(i),
+            bebanPenguji[i] + ' juz',
+            santriText,
+            selisihText
+        ]);
+    }
+    
+    excelData.push(['Total', totalJuz + ' juz', '', '']);
+    excelData.push(['', 'Selisih maksimal antar penguji: ' + (Math.max(...bebanPenguji) - Math.min(...bebanPenguji)) + ' juz', '', '']);
+    
+    const ws = XLSX.utils.aoa_to_sheet(excelData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    XLSX.writeFile(wb, sheetName + '.xlsx');
+}    
+    // Tampilkan jadwal utama
+    const jadwalHtml = tampilkanJadwal(jadwal, berhasil, hari, sesi, penguji);
+    const downloadBtn = '<div style="text-align:right; margin-top:10px;"><button class="btn-excel" id="downloadJadwalBtn">📥 Download Jadwal Excel</button></div>';
+    document.getElementById('jadwalArea').innerHTML = jadwalHtml + downloadBtn;
+    
+    // Tampilkan kategori
+    document.getElementById('kategoriArea').innerHTML = tampilkanKategori(tidakIkut, santriTidakDapat, santriGagal, penguji, maxJuz);
+    
+    // Pasang event listener untuk tombol download
+    setTimeout(function() {
+        const bebanPengujiBtn = document.getElementById('downloadBebanPengujiBtn');
+        if (bebanPengujiBtn) bebanPengujiBtn.onclick = downloadBebanPengujiExcel;
+        const jadwalBtn = document.getElementById('downloadJadwalBtn');
+        if (jadwalBtn) jadwalBtn.onclick = downloadJadwalExcel;
+        
+        const tidakIkutBtn = document.getElementById('downloadTidakIkutBtn');
+        if (tidakIkutBtn) tidakIkutBtn.onclick = function() { downloadKategoriExcel('tidakIkut'); };
+        
+        const tidakDapatBtn = document.getElementById('downloadTidakDapatBtn');
+        if (tidakDapatBtn) tidakDapatBtn.onclick = function() { downloadKategoriExcel('tidakDapat'); };
+        
+        const gagalBtn = document.getElementById('downloadGagalBtn');
+        if (gagalBtn) gagalBtn.onclick = function() { downloadKategoriExcel('gagal'); };
+    }, 50);
+    
+    let totalSeharusnya = withPenguji.reduce((s, x) => s + x.totalJuz, 0);
+    let totalTerjadwal = berhasil.reduce((s, x) => {
+        let sum = 0;
+        for (let h = 0; h < hari; h++) sum += x.juzPerHari[h].length;
+        return s + sum;
+    }, 0);
+    
+    document.getElementById('infoArea').innerHTML = '<div class="alert-success">✅ Generate Berhasil! Santri berhasil: ' + berhasil.length + ' dari ' + santri.length + ' (' + totalTerjadwal + '/' + totalSeharusnya + ' juz)</div>';
+    document.getElementById('errorArea').innerHTML = '';
+}
+    document.getElementById('loadSheetsBtn').addEventListener('click', loadSheets);
+    document.getElementById('generateBtn').addEventListener('click', generateJadwal);
+</script>
+</body>
+</html>

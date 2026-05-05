@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Voting Penguji Al-Qur'an - TMB</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Poppins', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f7e8;
+      color: #1e3a2f;
+      min-height: 100vh;
+      overflow-x: hidden !important;
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    /* ========== LAYOUT SIDEBAR ========== */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 998;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background: linear-gradient(135deg, #2d6a4f 0%, #2e7d32 50%, #2d6a4f 100%);
+      z-index: 999;
+      transition: left 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sidebar.open {
+      left: 0;
+    }
+    
+    .sidebar-header {
+      padding: 20px 16px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+    
+    .sidebar-logo {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 8px;
+      border: 2px solid #ffd966;
+    }
+    
+    .sidebar-header h3 {
+      color: white;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    
+    .sidebar-header p {
+      color: rgba(255,255,255,0.7);
+      font-size: 10px;
+    }
+    
+    .sidebar-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 12px 16px 12px;
+      flex-shrink: 0;
+      margin-top: 10px;
+    }
+    
+    .sidebar-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      width: 100%;
+    }
+    
+    .sidebar-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateX(5px);
+    }
+    
+    .sidebar-footer {
+      padding: 12px 12px 18px 12px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      flex-shrink: 0;
+      margin-top: 10px;
+    }
+    
+    .user-status-sidebar {
+      background: rgba(255,255,255,0.12);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      margin-bottom: 10px;
+      text-align: center;
+      word-break: break-word;
+      color: white;
+    }
+    
+    .sidebar-login-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .sidebar-login-buttons button {
+      flex: 1;
+      background: white;
+      color: #1e4a2f;
+      border: none;
+      padding: 8px 0;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.75rem;
+    }
+    
+    .sidebar-login-buttons button.logout-btn {
+      background: #ff8a5c;
+      color: white;
+    }
+    
+    .login-form-sidebar {
+      margin-top: 10px;
+    }
+    
+    .login-form-sidebar input {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.75rem;
+    }
+    
+    .login-form-sidebar button {
+      width: 100%;
+      background: #ffb74d;
+      color: #1e3a2f;
+      border: none;
+      padding: 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    
+    .login-form-sidebar .cancel-login {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .error-msg-sidebar {
+      color: #ffb3b3;
+      font-size: 0.65rem;
+      margin-top: 5px;
+      text-align: center;
+    }
+    
+    .hamburger-btn {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s;
+      position: absolute;
+      left: 20px;
+      top: 20%;
+      transform: translateY(-50%);
+    }
+    
+    .hamburger-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-50%) scale(1.05);
+    }
+    
+    .main-container {
+      transition: margin-left 0.3s ease;
+      width: 100%;
+    }
+    
+    @media (min-width: 769px) {
+      body.sidebar-open .main-container {
+        margin-left: 280px;
+      }
+      .main-container {
+        margin-left: 0;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        left: -280px;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+    }
+    
+    /* ========== STYLE KONTEN UTAMA ========== */
+    .container {
+      max-width: 1400px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(46, 125, 50, 0.25);
+      overflow: hidden;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #2d6a4f 0%, #2e7d32 50%, #2d6a4f 100%);
+      color: white;
+      padding: 20px 25px;
+      text-align: center;
+      position: relative;
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        padding: 16px;
+      }
+    }
+    
+    .logo-circle img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+    
+    .header h1 {
+      font-size: 1.8em;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+    
+    .header h4 {
+      opacity: 0.85;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    
+    .header-refresh {
+      display: inline-flex;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.3s;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    
+    .header-refresh:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+    
+    .filter-section {
+      background: white;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 180px;
+    }
+    
+    .filter-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+      transition: all 0.3s;
+      background: white;
+    }
+    
+    .filter-group input:focus,
+    .filter-group select:focus {
+      outline: none;
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    }
+    
+    .reset-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .reset-btn:hover {
+      background: #e2e8f0;
+    }
+    
+    .content {
+      padding: 20px;
+      background: white;
+      min-height: 500px;
+    }
+    
+    /* Card Style untuk Tabel Vertikal */
+    .voting-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: all 0.3s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .voting-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .card-header {
+      background: #f8fafc;
+      padding: 12px 16px;
+      border-bottom: 2px solid #2e7d32;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .card-kode {
+      background: linear-gradient(135deg, #2d6a4f, #2e7d32);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .card-status {
+      font-size: 12px;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    
+    .status-sudah {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-belum {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .card-body {
+      padding: 16px;
+    }
+    
+    .info-row {
+      display: flex;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .info-label {
+      width: 120px;
+      font-weight: 600;
+      color: #475569;
+      font-size: 13px;
+    }
+    
+    .info-value {
+      flex: 1;
+      color: #1e293b;
+      font-size: 13px;
+      word-break: break-word;
+    }
+    
+    .penguji-value {
+      font-weight: 600;
+      color: #2e7d32;
+    }
+    
+    .action-area {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .vote-input {
+      flex: 2;
+      min-width: 200px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    
+    .vote-input:focus {
+      outline: none;
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    }
+    
+    .vote-btn {
+      background: #10b981;
+      padding: 10px 20px;
+      font-size: 13px;
+      border-radius: 30px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .vote-btn:hover {
+      background: #059669;
+      transform: scale(1.02);
+    }
+    
+    .vote-btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .locked-text {
+      color: #94a3b8;
+      font-size: 13px;
+      font-style: italic;
+    }
+    
+    .stats {
+      margin-top: 20px;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-radius: 10px;
+      text-align: center;
+      color: #475569;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .stats .filter-badge {
+      background: #e2e8f0;
+      padding: 3px 10px;
+      border-radius: 16px;
+      font-size: 11px;
+      color: #1e293b;
+    }
+    
+    .footer {
+      background: #f8fafc;
+      padding: 12px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 11px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    /* Loading Overlay (sama seperti animasi login) */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(3px);
+    }
+    
+    .loading-card {
+      background: white;
+      padding: 25px 35px;
+      border-radius: 20px;
+      text-align: center;
+      min-width: 280px;
+      max-width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 0.3s ease;
+    }
+    
+    .loading-card h3 {
+      color: #2d6a4f;
+      margin-bottom: 15px;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 10px;
+      background: #e9f5e6;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #2d6a4f, #40916c, #52b788);
+      border-radius: 20px;
+      transition: width 0.3s ease;
+    }
+    
+    .loading-percent {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2d6a4f;
+      margin: 8px 0;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e9f5e6;
+      border-top: 3px solid #2d6a4f;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .dots::after {
+      content: '';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+    
+    @keyframes dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.2em; }
+      .content { padding: 14px; }
+      .filter-section { padding: 12px; flex-direction: column; }
+      .filter-group { width: 100%; }
+      .logo-circle img { width: 50px; height: 50px; }
+      .info-label { width: 100px; }
+      .vote-input { width: 100%; margin-bottom: 8px; }
+      .action-area { flex-direction: column; }
+      .vote-btn { width: 100%; }
+    }
+    
+    @media print {
+      body { background: white; padding: 0; }
+      .sidebar, .hamburger-btn, .footer, .filter-section, .action-area { display: none; }
+      .container { box-shadow: none; border-radius: 0; margin: 0; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="logo.png" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/60'">
+      <h3>Lajnah Tahfizh</h3>
+      <p>Ma'had Tamaamul Minnah, Bengle - Karawang</p>
+    </div>
+    
+    <div class="sidebar-buttons" id="sidebarNavMenu"></div>
+    
+    <div class="sidebar-footer">
+      <div id="userStatusSidebar" class="user-status-sidebar"></div>
+      <div id="sidebarLoginArea">
+        <div class="sidebar-login-buttons" id="sidebarBtnGroup">
+          <button id="sidebarLoginBtn" onclick="showLoginFormSidebar()">Login</button>
+          <button id="sidebarLogoutBtn" onclick="logout()" style="display:none;" class="logout-btn">Logout</button>
+        </div>
+        <div id="loginFormSidebar" class="login-form-sidebar" style="display:none;">
+          <input type="text" id="loginEmailSidebar" placeholder="Email atau ID">
+          <input type="password" id="loginPasswordSidebar" placeholder="Password">
+          <button onclick="doLoginFromSidebar()">Masuk</button>
+          <button onclick="hideLoginFormSidebar()" class="cancel-login">Batal</button>
+          <div id="loginErrorSidebar" class="error-msg-sidebar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="main-container" id="mainContainer">
+    <div class="container">
+      <div class="header">
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="logo-circle">
+          <img src="logo.png" alt="Logo" class="header-logo" onerror="this.src='https://via.placeholder.com/70'">
+        </div>
+        <h1>🗳️ Voting Penguji Al-Qur'an</h1>
+        <h4>Ma'had Tamaamul Minnah,, Bengle - Karawang - Karawang</h4>
+        
+        <button class="header-refresh" onclick="refreshData()">
+          <i class="fas fa-sync-alt"></i> Refresh Data
+        </button>
+      </div>
+      
+      <div class="filter-section">
+        <div class="filter-group">
+          <label>🔍 Cari Peserta Ujian</label>
+          <input type="text" id="searchInput" placeholder="Ketik nama peserta..." onkeyup="applyFilters()">
+        </div>
+        <div class="filter-group">
+          <label>📋 Filter Status</label>
+          <select id="statusFilter" onchange="applyFilters()">
+            <option value="">Semua</option>
+            <option value="belum">Masih Kosong</option>
+            <option value="sudah">Sudah Diisi</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>&nbsp;</label>
+          <button class="reset-btn" onclick="resetFilters()">Reset Filter</button>
+        </div>
+      </div>
+      
+      <div class="content">
+        <div id="loadingArea">
+          <div class="loading" style="text-align:center; padding:40px;">
+            <div class="spinner"></div>
+            <p>Memuat data voting...</p>
+          </div>
+        </div>
+        <div id="errorArea" style="display: none;"></div>
+        <div id="tableArea" style="display: none;"></div>
+      </div>
+      
+      <div class="footer">
+        <p>© 2026 - Lajnah Tahfizh Banin | Ma'had Tamaamul Minnah, Bengle - Karawang</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // ==================== KONFIGURASI ====================
+    const GAS_URL = "https://script.google.com/macros/s/AKfycby-udxW8ELOwXC0saXILjstJeuyPcEQzvevD4RF6pZwNVz7N7BeOgL52bcfhuBIC1KX/exec";
+    const GAS_LOGIN_URL = 'https://script.google.com/macros/s/AKfycbxc4eVb8tWMl2CoJ3XEEK_lu7e917IB2SdzYxJTpATtiimZ69ELCP8GkGNZqEJ85swW6w/exec';
+    const SHEET_NAME = "VotingData";
+
+    // ==================== GLOBAL ====================
+    let currentData = [];
+    let requestId = 0;
+    let autoRefreshInterval = null;
+    let currentUser = null;
+    
+    // Menu berdasarkan role
+        const menuForRole = {
+            public: [
+                { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+                { id: 'program', label: '📚 Program Tahfidz', type: 'section', target: 'programSection' },
+                { id: 'alumni', label: '💼 Alumni', type: 'link', url: 'Alumni.html' },
+                { id: 'Musammi', label: '🎓 Musammi', type: 'section', target: 'MusammiSection' },
+                { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+                { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+                { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+                { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+            ],
+            admin_biasa: [
+                { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+                { id: 'program', label: '📚 Program Tahfidz', type: 'section', target: 'programSection' },
+                { id: 'alumni', label: '💼 Alumni', type: 'link', url: 'Alumni.html' },
+                { id: 'Musammi', label: '🎓 Musammi', type: 'section', target: 'MusammiSection' },
+                { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+                { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+                { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+                { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type: 'link', url: 'Pajangan Jadwal Penguji.html' },
+                { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
+                { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
+                { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+            ],
+            super_admin: [
+                { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+                { id: 'program', label: '📚 Program Tahfidz', type: 'section', target: 'programSection' },
+                { id: 'Musammi', label: '🎓 Musammi', type: 'section', target: 'MusammiSection' },
+                { id: 'alumni', label: '💼 Alumni', type: 'link', url: 'Alumni.html' },
+                { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+                { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+                { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+                { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
+                { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type:'link', url: 'Pajangan Jadwal Penguji.html' },
+                { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
+                { id: 'buatJadwalUjian', label: '✏️ Buat Jadwal Ujian', type:'link', url: 'Jadwal Ujian Generator.html' },
+                { id: 'buatJadwalPenguji', label: '📝 Buat Jadwal Penguji', type:'link', url: 'Jadwal Penguji Generator.html' },
+                { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+            ]
+        };
+    
+    // ========== SIDEBAR & NAVIGASI ==========
+    function renderNavSidebar() {
+      const navContainer = document.getElementById('sidebarNavMenu');
+      if (!navContainer) return;
+      navContainer.innerHTML = '';
+      
+      let menus = menuForRole.public;
+      if (currentUser) {
+        menus = (currentUser.role === 'super_admin') ? menuForRole.super_admin : menuForRole.admin_biasa;
+      }
+      
+      menus.forEach(menu => {
+        const btn = document.createElement('button');
+        btn.className = 'sidebar-btn';
+        btn.innerHTML = menu.label;
+        btn.onclick = () => {
+          if (menu.type === 'link') {
+            window.location.href = menu.url;
+          } else if (menu.type === 'section') {
+            localStorage.setItem('targetSection', menu.target);
+            window.location.href = 'index.html';
+          } else {
+            window.location.href = menu.url;
+          }
+          closeSidebar();
+        };
+        navContainer.appendChild(btn);
+      });
+    }
+    
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+      const isOpen = sidebar.classList.contains('open');
+      if (isOpen) {
+        document.body.classList.add('sidebar-open');
+        document.getElementById('hamburgerBtn').innerHTML = '<i class="fas fa-times"></i>';
+      } else {
+        document.body.classList.remove('sidebar-open');
+        document.getElementById('hamburgerBtn').innerHTML = '<i class="fas fa-bars"></i>';
+      }
+    }
+    
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+      document.body.classList.remove('sidebar-open');
+      document.getElementById('hamburgerBtn').innerHTML = '<i class="fas fa-bars"></i>';
+    }
+    
+    document.getElementById('hamburgerBtn').addEventListener('click', toggleSidebar);
+    document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+    
+    // ========== LOGIN FUNGSI ==========
+    function showLoginFormSidebar() {
+      if (!currentUser) {
+        document.getElementById('loginFormSidebar').style.display = 'block';
+        document.getElementById('sidebarLoginBtn').style.display = 'none';
+        document.getElementById('loginErrorSidebar').innerHTML = '';
+      }
+    }
+    
+    function hideLoginFormSidebar() {
+      document.getElementById('loginFormSidebar').style.display = 'none';
+      document.getElementById('sidebarLoginBtn').style.display = 'block';
+      document.getElementById('loginEmailSidebar').value = '';
+      document.getElementById('loginPasswordSidebar').value = '';
+    }
+    
+    // Loading overlay untuk voting
+    let loadingInterval = null;
+    let currentProgress = 0;
+    
+    function showVotingLoading(title, steps = ['Menyiapkan', 'Memproses', 'Menyelesaikan']) {
+      hideVotingLoading();
+      currentProgress = 0;
+      let stepIndex = 0;
+      const overlay = document.createElement('div');
+      overlay.className = 'loading-overlay';
+      overlay.id = 'votingLoadingOverlay';
+      overlay.innerHTML = `
+        <div class="loading-card">
+          <h3>${title}</h3>
+          <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <div class="loading-percent" id="loadingPercent">0%</div>
+          <div class="loading-step" id="loadingStep">${steps[0]}<span class="dots"></span></div>
+          <div class="loading-text" id="loadingText">Mohon tunggu sebentar...</div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      loadingInterval = setInterval(() => {
+        if (currentProgress < 90) {
+          currentProgress += Math.random() * 8;
+          if (currentProgress > 90) currentProgress = 90;
+          updateVotingProgress(currentProgress);
+        }
+        const newStepIndex = Math.floor(currentProgress / 30);
+        if (newStepIndex !== stepIndex && newStepIndex < steps.length) {
+          stepIndex = newStepIndex;
+          const stepEl = document.getElementById('loadingStep');
+          if (stepEl) stepEl.innerHTML = steps[stepIndex] + '<span class="dots"></span>';
+        }
+      }, 200);
+    }
+    
+    function updateVotingProgress(percent) {
+      const progressBar = document.getElementById('progressBar');
+      const percentEl = document.getElementById('loadingPercent');
+      if (progressBar) progressBar.style.width = percent + '%';
+      if (percentEl) percentEl.innerHTML = Math.floor(percent) + '%';
+    }
+    
+    function completeVotingLoading(success = true, message = '') {
+      if (loadingInterval) clearInterval(loadingInterval);
+      updateVotingProgress(100);
+      setTimeout(() => { hideVotingLoading(); }, 800);
+    }
+    
+    function hideVotingLoading() {
+      if (loadingInterval) { clearInterval(loadingInterval); loadingInterval = null; }
+      const overlay = document.getElementById('votingLoadingOverlay');
+      if (overlay) overlay.remove();
+    }
+    
+    function doLoginFromSidebar() {
+      const login = document.getElementById('loginEmailSidebar').value.trim();
+      const password = document.getElementById('loginPasswordSidebar').value;
+      if (!login || !password) {
+        document.getElementById('loginErrorSidebar').innerHTML = 'Harap isi email/ID dan password';
+        return;
+      }
+      
+      showVotingLoading('Login', ['Memeriksa akun', 'Verifikasi password', 'Mengambil data user']);
+      
+      const callbackName = 'jsonp_callback_' + Date.now();
+      window[callbackName] = function(response) {
+        delete window[callbackName];
+        if (response.success) {
+          currentUser = { role: response.role, email: response.email, id: response.id };
+          localStorage.setItem('tahfidz_user', JSON.stringify(currentUser));
+          completeVotingLoading(true);
+          setTimeout(() => {
+            document.getElementById('loginFormSidebar').style.display = 'none';
+            document.getElementById('sidebarLoginBtn').style.display = 'none';
+            document.getElementById('sidebarLogoutBtn').style.display = 'block';
+            updateSidebarUI();
+            renderNavSidebar();
+            location.reload();
+          }, 1000);
+        } else {
+          completeVotingLoading(false);
+          setTimeout(() => {
+            document.getElementById('loginErrorSidebar').innerHTML = response.message || 'Login gagal';
+          }, 800);
+        }
+      };
+      
+      const url = `${GAS_LOGIN_URL}?callback=${callbackName}&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`;
+      const script = document.createElement('script');
+      script.src = url;
+      document.body.appendChild(script);
+    }
+    
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('tahfidz_user');
+      updateSidebarUI();
+      renderNavSidebar();
+      hideLoginFormSidebar();
+      location.replace('index.html');
+    }
+    
+    function updateSidebarUI() {
+      const userStatusDiv = document.getElementById('userStatusSidebar');
+      const loginBtn = document.getElementById('sidebarLoginBtn');
+      const logoutBtn = document.getElementById('sidebarLogoutBtn');
+      const loginForm = document.getElementById('loginFormSidebar');
+      
+      if (currentUser) {
+        const roleText = currentUser.role === 'super_admin' ? 'Operator' : 'Musammi';
+        userStatusDiv.innerHTML = `🎓 ${currentUser.email} (${roleText})`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+        if (loginForm) loginForm.style.display = 'none';
+      } else {
+        userStatusDiv.innerHTML = '';
+        loginBtn.style.display = 'block';
+        logoutBtn.style.display = 'none';
+      }
+    }
+    
+    function loadStoredUser() {
+      const stored = localStorage.getItem('tahfidz_user');
+      if (stored) {
+        try {
+          currentUser = JSON.parse(stored);
+          updateSidebarUI();
+          renderNavSidebar();
+        } catch(e) { console.error(e); }
+      } else {
+        updateSidebarUI();
+        renderNavSidebar();
+      }
+    }
+    
+    function checkAuth() {
+      if (!currentUser) {
+        location.replace('index.html');
+      }
+    }
+    
+    // ========== VOTING FUNCTIONS ==========
+    function setStatus(msg, isError = false) {
+      const errorArea = document.getElementById('errorArea');
+      if (isError) {
+        errorArea.style.display = 'block';
+        errorArea.innerHTML = `<div class="error" style="background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;border-radius:10px;color:#b91c1c;margin:20px 0;">❌ ${msg}</div>`;
+        setTimeout(() => {
+          errorArea.style.display = 'none';
+        }, 3000);
+      } else {
+        errorArea.style.display = 'none';
+      }
+    }
+    
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/[&<>]/g, function(m) {
+        if (m === "&") return "&amp;";
+        if (m === "<") return "&lt;";
+        if (m === ">") return "&gt;";
+        return m;
+      });
+    }
+    
+    function showLoading(show) {
+      const loadingArea = document.getElementById('loadingArea');
+      loadingArea.style.display = show ? 'block' : 'none';
+      const tableArea = document.getElementById('tableArea');
+      if (tableArea) tableArea.style.display = show ? 'none' : 'block';
+    }
+    
+    function jsonpRequest(params) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `jsonp_${Date.now()}_${requestId++}`;
+        const url = new URL(GAS_URL);
+        
+        Object.keys(params).forEach(key => {
+          let value = params[key];
+          if (Array.isArray(value)) {
+            value = JSON.stringify(value);
+          }
+          url.searchParams.append(key, value);
+        });
+        url.searchParams.append('callback', callbackName);
+        url.searchParams.append('sheet', SHEET_NAME);
+        
+        const timeout = setTimeout(() => {
+          if (window[callbackName]) {
+            delete window[callbackName];
+            reject(new Error("Request timeout"));
+          }
+        }, 10000);
+        
+        window[callbackName] = function(data) {
+          clearTimeout(timeout);
+          delete window[callbackName];
+          if (script.parentNode) document.body.removeChild(script);
+          resolve(data);
+        };
+        
+        const script = document.createElement('script');
+        script.src = url.toString();
+        script.onerror = function() {
+          clearTimeout(timeout);
+          delete window[callbackName];
+          reject(new Error("Network error"));
+        };
+        
+        document.body.appendChild(script);
+      });
+    }
+    
+    async function fetchData() {
+      try {
+        const result = await jsonpRequest({ action: "read" });
+        if (result.success) {
+          return result.data || [];
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setStatus(err.message, true);
+        return null;
+      }
+    }
+    
+async function checkAndInitData() {
+  const data = await fetchData();
+  
+  // Jika data kosong (null atau array kosong)
+  if (data === null || data.length === 0) {
+    // Tampilkan pesan di area tabel
+    const container = document.getElementById('tableArea');
+    if (container) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
+          <i class="fas fa-database" style="font-size: 48px; color: #ef4444; margin-bottom: 16px; display: block;"></i>
+          <h3 style="color: #991b1b; margin-bottom: 8px;">Voting belum tersedia</h3>
+          <p style="color: #7f1d1d; margin-bottom: 16px;">Saat ini belum ada data voting Penguji atau filter keliru.</p>
+          <p style="color: #b91c1c; font-size: 13px;">
+            <i class="fas fa-envelope"></i> Silakan hubungi admin untuk menambahkan data.
+          </p>
+          <hr style="margin: 16px 0; border-color: #fecaca;">
+          <p style="color: #7f1d1d; font-size: 12px;">
+            <i class="fas fa-info-circle"></i> Data akan muncul setelah admin mengisi daftar voting.
+          </p>
+        </div>
+      `;
+      container.style.display = 'block';
+    }
+    
+    // Sembunyikan loading
+    showLoading(false);
+    
+    // Kembalikan array kosong
+    return [];
+  }
+  
+  return data;
+}
+    
+    async function vote(kode, namaPenguji) {
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+      }
+      
+      showVotingLoading('Menyimpan Pilihan', ['Mengirim data', 'Memverifikasi', 'Menyimpan ke database']);
+      
+      try {
+        if (!kode || !namaPenguji) {
+          setStatus("Nama penguji tidak boleh kosong!", true);
+          completeVotingLoading(false);
+          return false;
+        }
+        
+        const result = await jsonpRequest({ 
+          action: "vote", 
+          kode: kode,
+          namaPenguji: namaPenguji
+        });
+        
+        if (result.success) {
+          completeVotingLoading(true);
+          setStatus(result.message);
+          await refreshData();
+          return true;
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (err) {
+        completeVotingLoading(false);
+        setStatus(err.message, true);
+        return false;
+      } finally {
+        startAutoRefresh();
+      }
+    }
+    
+    async function refreshData() {
+      showLoading(true);
+      const data = await fetchData();
+      if (data !== null) {
+        currentData = data;
+        renderTable();
+      }
+      showLoading(false);
+    }
+    
+    function startAutoRefresh() {
+      if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+      autoRefreshInterval = setInterval(async () => {
+        const data = await fetchData();
+        if (data !== null && JSON.stringify(currentData) !== JSON.stringify(data)) {
+          currentData = data;
+          renderTable();
+        }
+      }, 10000);
+    }
+    
+    // ==================== FILTER & RENDER (VERTIKAL) ====================
+    function applyFilters() {
+      renderTable();
+    }
+    
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('statusFilter').value = '';
+      renderTable();
+    }
+    
+    function getFilteredData() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      const statusFilter = document.getElementById('statusFilter').value;
+      
+      let filtered = [...currentData];
+      
+      if (searchTerm) {
+        filtered = filtered.filter(row => 
+          row.peserta && row.peserta.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      if (statusFilter === 'belum') {
+        filtered = filtered.filter(row => !row.penguji || row.penguji === "");
+      } else if (statusFilter === 'sudah') {
+        filtered = filtered.filter(row => row.penguji && row.penguji !== "");
+      }
+      
+      return filtered;
+    }
+    
+    function renderTable() {
+      const container = document.getElementById('tableArea');
+      const filteredData = getFilteredData();
+      
+      if (!filteredData.length) {
+              container.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
+          <i class="fas fa-database" style="font-size: 48px; color: #ef4444; margin-bottom: 16px; display: block;"></i>
+          <h3 style="color: #991b1b; margin-bottom: 8px;">Voting belum tersedia</h3>
+          <p style="color: #7f1d1d; margin-bottom: 16px;">Saat ini belum ada data voting Penguji atau filter keliru.</p>
+          <p style="color: #b91c1c; font-size: 13px;">
+            <i class="fas fa-envelope"></i> Silakan hubungi admin untuk menambahkan data.
+          </p>
+          <hr style="margin: 16px 0; border-color: #fecaca;">
+          <p style="color: #7f1d1d; font-size: 12px;">
+            <i class="fas fa-info-circle"></i> Data akan muncul setelah admin mengisi daftar voting.
+          </p>
+        </div>
+      `;
+        container.style.display = 'block';
+        return;
+      }
+      
+      let html = '';
+      
+      filteredData.forEach(row => {
+        const sudahMemilih = row.penguji && row.penguji !== "";
+        const pengujiSekarang = row.penguji || "";
+        
+        html += `
+          <div class="voting-card">
+            <div class="card-header">
+              <span class="card-kode">📌 Kode:  ${escapeHtml(row.kode)}</span>
+              <span class="card-status">
+                ${sudahMemilih ? 
+                  '<span class="status-badge status-sudah">✅ Terisi</span>' : 
+                  '<span class="status-badge status-belum">⏳ Masih Kosong</span>'
+                }
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="info-row">
+                <div class="info-label">📚 Santri Ujian: </div>
+                <div class="info-value">${escapeHtml(row.peserta)}</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">🎓 Penguji: </div>
+                <div class="info-value">
+                  ${sudahMemilih ? 
+                    `<span class="penguji-value">${escapeHtml(pengujiSekarang)} ✅</span>` : 
+                    '<span style="color:#94a3b8;">⏳ Masih Kosong</span>'
+                  }
+                </div>
+              </div>
+              <div class="action-area">
+                ${!sudahMemilih ? `
+                  <input type="text" id="input-${escapeHtml(row.kode)}" class="vote-input" placeholder="Masukkan Nama Penguji">
+                  <button class="vote-btn" onclick="handleVote('${escapeHtml(row.kode)}')">💾 Simpan Pilihan</button>
+                ` : `
+                  <span class="locked-text">🔒 Sudah terisi oleh penguji dan tidak dapat diubah</span>
+                `}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      const dataCount = filteredData.length;
+      const filterText = [];
+      const searchTerm = document.getElementById('searchInput').value;
+      const statusFilter = document.getElementById('statusFilter').value;
+      if (searchTerm) filterText.push(`🔍 "${searchTerm}"`);
+      if (statusFilter === 'belum') filterText.push(`📋 Status: Masih Kosong`);
+      if (statusFilter === 'sudah') filterText.push(`📋 Status: Sudah Diisi`);
+      
+      const filterBadge = filterText.length ? `<span class="filter-badge">${filterText.join(' + ')}</span>` : '';
+      
+      const statsHtml = `<div class="stats">
+        <span>📊 <strong>${dataCount} Peserta</strong></span>
+        <span>🕒 Update: ${new Date().toLocaleString('id-ID')}</span>
+        ${filterBadge}
+      </div>`;
+      
+      container.innerHTML = html + statsHtml;
+      container.style.display = 'block';
+    }
+    
+    window.handleVote = function(kode) {
+      const input = document.getElementById(`input-${kode}`);
+      const namaPenguji = input ? input.value.trim() : "";
+      
+      if (!namaPenguji) {
+        setStatus("Isi Nama Penguji terlebih dahulu!", true);
+        return;
+      }
+      
+      if (confirm(`Yakin memilih "${namaPenguji}" untuk peserta kode ${kode}?\n\nPilihan tidak dapat diubah setelah disimpan.`)) {
+        vote(kode, namaPenguji);
+      }
+    };
+    
+    // ==================== INITIALIZATION ====================
+    async function init() {
+      loadStoredUser();
+      checkAuth();
+      startAutoRefresh();
+      showLoading(true);
+      const data = await checkAndInitData();
+      if (data !== null) {
+        currentData = data;
+        renderTable();
+      }
+      showLoading(false);
+    }
+    
+    init();
+  </script>
+</body>
+</html>
