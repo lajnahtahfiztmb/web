@@ -1435,7 +1435,7 @@
     }
     
     function exportToExcel() {
-      if (!currentUser) return;
+      if (currentUser.role !== 'super_admin') return;
       let groups = processDataToGroups(rawData);
       groups = getFilteredGroups(groups);
       
