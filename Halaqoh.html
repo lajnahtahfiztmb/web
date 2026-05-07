@@ -428,6 +428,11 @@
       transform: translateY(-2px);
     }
     
+    /* Sembunyikan tombol excel default */
+    #excelBtnContainer {
+      transition: all 0.3s;
+    }
+    
     .tabs {
       display: flex;
       gap: 6px;
@@ -441,15 +446,13 @@
       background: #e7fde7;
       border: none;
       padding: 10px 20px;
-      border-radius: 10px 10px 0 0;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 13px;
       font-weight: 600;
       transition: all 0.3s;
       color: #2d6a4f;
       font-family: inherit;
-      border-radius: 10px;
-
     }
     
     .tab-btn:hover {
@@ -504,7 +507,7 @@
       font-size: 15px;
     }
     
-    /* ========== STYLE KARTU YANG DIPERBAIKI ========== */
+    /* ========== STYLE KARTU ========== */
     .cards-container {
       display: flex;
       flex-direction: column;
@@ -785,6 +788,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -840,13 +844,13 @@
           <input type="text" id="searchInput" placeholder="Ketik nama santri..." onkeyup="applyFilters()">
         </div>
         <div class="filter-group">
-          <label>📚 Filter Kelas</label>
+          <label>🏫 Filter Kelas</label>
           <select id="classFilter" onchange="applyFilters()">
             <option value="">Semua Kelas</option>
           </select>
         </div>
         <div class="filter-group">
-          <label>🎓 Filter Musammi</label>
+          <label>💼 Filter Musammi</label>
           <select id="musammiFilter" onchange="applyFilters()">
             <option value="">Semua Musammi</option>
           </select>
@@ -861,7 +865,7 @@
           <label>&nbsp;</label>
           <button class="reset-btn" onclick="resetFilters()">Reset Filter</button>
         </div>
-        <div class="filter-group" id="excelBtnContainer" style="display:none;">
+        <div class="filter-group" id="excelBtnContainer" style="display:none !important;">
           <label>&nbsp;</label>
           <button class="excel-btn" onclick="exportToExcel()">
             <i class="fas fa-file-excel"></i> Unduh Excel
@@ -1000,22 +1004,28 @@
     const menuForRole = {
       public: [
         { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'nasihat.html' },
         { id: 'program', label: '📚 Program Tahfidz', type: 'section', target: 'programSection' },
-        { id: 'alumni', label: '💼 Alumni', type: 'link', url: 'Alumni.html' },
-        { id: 'Musammi', label: '🎓 Musammi', type: 'section', target: 'MusammiSection' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'section', target: 'MusammiSection' },
         { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
         { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
         { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'tajwid.html' },
         { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
       ],
       admin_biasa: [
         { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'nasihat.html' },
         { id: 'program', label: '📚 Program Tahfidz', type: 'section', target: 'programSection' },
-        { id: 'alumni', label: '💼 Alumni', type: 'link', url: 'Alumni.html' },
-        { id: 'Musammi', label: '🎓 Musammi', type: 'section', target: 'MusammiSection' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'section', target: 'MusammiSection' },
         { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
         { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
         { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'tajwid.html' },
         { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type: 'link', url: 'Pajangan Jadwal Penguji.html' },
         { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
         { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
@@ -1023,12 +1033,15 @@
       ],
       super_admin: [
         { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'nasihat.html' },
         { id: 'program', label: '📚 Program Tahfidz', type: 'section', target: 'programSection' },
-        { id: 'Musammi', label: '🎓 Musammi', type: 'section', target: 'MusammiSection' },
-        { id: 'alumni', label: '💼 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'section', target: 'MusammiSection' },
         { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
         { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
         { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'tajwid.html' },
         { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
         { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type:'link', url: 'Pajangan Jadwal Penguji.html' },
         { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
@@ -1083,18 +1096,30 @@
         if (response.success) {
           currentUser = { role: response.role, email: response.email, id: response.id };
           localStorage.setItem('tahfidz_user', JSON.stringify(currentUser));
+          
+          // Update UI langsung
+          updateSidebarUI();
+          renderNavSidebar();
+          
           completeLoading();
           setTimeout(() => {
             document.getElementById('loginFormSidebar').style.display = 'none';
             document.getElementById('sidebarLoginBtn').style.display = 'none';
             document.getElementById('sidebarLogoutBtn').style.display = 'block';
-            updateSidebarUI();
-            renderNavSidebar();
-            location.reload();
+            document.getElementById('loginErrorSidebar').innerHTML = '';
+            
+            // Refresh data tanpa reload halaman
+            if (rawData) {
+              renderCards();
+            } else {
+              loadAllData();
+            }
           }, 1000);
         } else {
           completeLoading();
-          setTimeout(() => document.getElementById('loginErrorSidebar').innerHTML = response.message || 'Login gagal', 800);
+          setTimeout(() => {
+            document.getElementById('loginErrorSidebar').innerHTML = response.message || 'Login gagal';
+          }, 800);
         }
       };
       const url = `${GAS_LOGIN_URL}?callback=${callbackName}&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`;
@@ -1109,31 +1134,55 @@
       updateSidebarUI();
       renderNavSidebar();
       hideLoginFormSidebar();
-      location.reload();
+      // Refresh tampilan
+      if (rawData) {
+        renderCards();
+      }
     }
     
     function updateSidebarUI() {
       const userStatusDiv = document.getElementById('userStatusSidebar');
       const loginBtn = document.getElementById('sidebarLoginBtn');
       const logoutBtn = document.getElementById('sidebarLogoutBtn');
-      if (currentUser) {
-        const roleText = currentUser.role === 'super_admin' ? 'Operator' : 'Musammi';
-        userStatusDiv.innerHTML = `🎓 ${currentUser.email} (${roleText})`;
+      const excelBtnContainer = document.getElementById('excelBtnContainer');
+      
+      if (!excelBtnContainer) return;
+      
+      console.log('Update UI - Current user:', currentUser);
+      
+      if (currentUser && currentUser.role) {
+        const roleText = currentUser.role === 'super_admin' ? 'Operator' : 
+                         (currentUser.role === 'admin_biasa' ? 'Musammi' : 'Musammi');
+        userStatusDiv.innerHTML = `💼 ${currentUser.email || currentUser.id} (${roleText})`;
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'block';
-        document.getElementById('excelBtnContainer').style.display = 'block';
+        
+        // HANYA super_admin yang bisa lihat tombol Excel
+        if (currentUser.role === 'super_admin') {
+          excelBtnContainer.style.display = 'block';
+        } else {
+          excelBtnContainer.style.display = 'none';
+        }
       } else {
         userStatusDiv.innerHTML = '';
         loginBtn.style.display = 'block';
         logoutBtn.style.display = 'none';
-        document.getElementById('excelBtnContainer').style.display = 'none';
+        excelBtnContainer.style.display = 'none';
       }
     }
     
     function loadStoredUser() {
       const stored = localStorage.getItem('tahfidz_user');
       if (stored) {
-        try { currentUser = JSON.parse(stored); } catch(e) {}
+        try { 
+          currentUser = JSON.parse(stored);
+          console.log('User loaded from storage:', currentUser);
+        } catch(e) {
+          console.error(e);
+          currentUser = null;
+        }
+      } else {
+        currentUser = null;
       }
       updateSidebarUI();
       renderNavSidebar();
@@ -1161,12 +1210,14 @@
       if (!data || data.length < 2) return [];
       
       const headers = data[0];
-      const noCol = findColumnIndex(headers, ['no', 'nomor', '#' ]);
-      const tempatCol = findColumnIndex(headers, ['tempat', 'lokasi', 'majlis', 'tempat halaqoh']);
-      const musammiCol = findColumnIndex(headers, ['musammi', 'penguji', 'ustadz', 'guru']);
+      const noCol = findColumnIndex(headers, ['no', 'nomor', '#', 'no.']);
+      const tempatCol = findColumnIndex(headers, ['tempat', 'lokasi', 'majlis', 'tempat halaqoh', 'tempat halaqoh']);
+      const musammiCol = findColumnIndex(headers, ['musammi', 'penguji', 'ustadz', 'guru', 'musammi/penguji']);
       const namaCol = findColumnIndex(headers, ['nama', 'nama santri', 'santri', 'nama lengkap']);
       const kelasCol = findColumnIndex(headers, ['kelas', 'class', 'rombel', 'tingkat']);
       const juzCol = findColumnIndex(headers, ['juz', 'juz hafalan', 'hafalan', 'juz yang dihafal']);
+      
+      console.log('Column indices:', { noCol, tempatCol, musammiCol, namaCol, kelasCol, juzCol });
       
       const groups = [];
       const groupMap = new Map();
@@ -1200,6 +1251,7 @@
         groups.push(group);
       }
       
+      console.log('Groups created:', groups.length);
       return groups;
     }
     
@@ -1237,8 +1289,8 @@
         container.innerHTML = `
           <div style="text-align: center; padding: 60px 20px; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
             <i class="fas fa-database" style="font-size: 48px; color: #ef4444; margin-bottom: 16px; display: block;"></i>
-            <h3 style="color: #991b1b; margin-bottom: 8px;">📭 Halaqoh belum tersedia</h3>
-            <p style="color: #7f1d1d; margin-bottom: 16px;">Saat ini belum ada data Halaqoh Santri.</p>
+            <h3 style="color: #991b1b; margin-bottom: 8px;"> Halaqoh belum tersedia</h3>
+            <p style="color: #7f1d1d; margin-bottom: 16px;">Saat ini belum ada data Halaqoh Santri atau filter keliru.</p>
             <p style="color: #b91c1c; font-size: 13px;"><i class="fas fa-envelope"></i> Silakan hubungi admin untuk menambahkan data.</p>
           </div>
         `;
@@ -1251,8 +1303,14 @@
       groups = getFilteredGroups(groups);
       
       if (groups.length === 0) {
-        container.innerHTML = `<div class="no-data"><i class="fas fa-search"></i> Tidak ada data yang sesuai</div>`;
-        document.getElementById('loadingArea').style.display = 'none';
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
+            <i class="fas fa-database" style="font-size: 48px; color: #ef4444; margin-bottom: 16px; display: block;"></i>
+            <h3 style="color: #991b1b; margin-bottom: 8px;"> Halaqoh belum tersedia</h3>
+            <p style="color: #7f1d1d; margin-bottom: 16px;">Saat ini belum ada data Halaqoh Santri atau filter keliru.</p>
+            <p style="color: #b91c1c; font-size: 13px;"><i class="fas fa-envelope"></i> Silakan hubungi admin untuk menambahkan data.</p>
+          </div>
+        `;        document.getElementById('loadingArea').style.display = 'none';
         container.style.display = 'block';
         return;
       }
@@ -1320,10 +1378,10 @@
       if (searchTerm && kelasFilter && musammiFilter && tempatFilter) return `🔍 "${searchTerm}" + Kelas: ${kelasFilter} + Musammi: ${musammiFilter} + Tempat: ${tempatFilter}`;
       if (searchTerm && kelasFilter && musammiFilter) return `🔍 "${searchTerm}" + Kelas: ${kelasFilter} + Musammi: ${musammiFilter}`;
       if (searchTerm && kelasFilter) return `🔍 "${searchTerm}" + Kelas: ${kelasFilter}`;
-      if (kelasFilter && musammiFilter) return `📚 Kelas: ${kelasFilter} + 🎓 Musammi: ${musammiFilter}`;
+      if (kelasFilter && musammiFilter) return `🏫 Kelas: ${kelasFilter} + 💼 Musammi: ${musammiFilter}`;
       if (searchTerm) return `🔍 "${searchTerm}"`;
-      if (kelasFilter) return `📚 Kelas: ${kelasFilter}`;
-      if (musammiFilter) return `🎓 Musammi: ${musammiFilter}`;
+      if (kelasFilter) return `🏫 Kelas: ${kelasFilter}`;
+      if (musammiFilter) return `💼 Musammi: ${musammiFilter}`;
       if (tempatFilter) return `📍 Tempat: ${tempatFilter}`;
       return '';
     }
@@ -1350,14 +1408,20 @@
       const musammiFilter = document.getElementById('musammiFilter');
       const tempatFilter = document.getElementById('tempatFilter');
       
-      kelasFilter.innerHTML = '<option value="">Semua Kelas</option>';
-      Array.from(kelasSet).sort().forEach(k => kelasFilter.innerHTML += `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`);
+      if (kelasFilter) {
+        kelasFilter.innerHTML = '<option value="">Semua Kelas</option>';
+        Array.from(kelasSet).sort().forEach(k => kelasFilter.innerHTML += `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`);
+      }
       
-      musammiFilter.innerHTML = '<option value="">Semua Musammi</option>';
-      Array.from(musammiSet).sort().forEach(m => musammiFilter.innerHTML += `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`);
+      if (musammiFilter) {
+        musammiFilter.innerHTML = '<option value="">Semua Musammi</option>';
+        Array.from(musammiSet).sort().forEach(m => musammiFilter.innerHTML += `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`);
+      }
       
-      tempatFilter.innerHTML = '<option value="">Semua Tempat</option>';
-      Array.from(tempatSet).sort().forEach(t => tempatFilter.innerHTML += `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`);
+      if (tempatFilter) {
+        tempatFilter.innerHTML = '<option value="">Semua Tempat</option>';
+        Array.from(tempatSet).sort().forEach(t => tempatFilter.innerHTML += `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`);
+      }
     }
     
     async function getSheets() {
@@ -1435,7 +1499,11 @@
     }
     
     function exportToExcel() {
-      if (currentUser.role !== 'super_admin') return;
+      if (!currentUser || currentUser.role !== 'super_admin') {
+        alert('Fitur ini hanya untuk Super Admin!');
+        return;
+      }
+      
       let groups = processDataToGroups(rawData);
       groups = getFilteredGroups(groups);
       
@@ -1462,12 +1530,7 @@
       return div.innerHTML;
     }
     
-    // Load XLSX library
-    const script = document.createElement('script');
-    script.src = 'https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js';
-    script.onload = () => console.log('XLSX loaded');
-    document.head.appendChild(script);
-    
+    // Inisialisasi
     loadSidebarState();
     loadStoredUser();
     loadAllData();
