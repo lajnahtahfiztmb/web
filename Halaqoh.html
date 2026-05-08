@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Halaqoh Tahfizh - TMB</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Favicon / Logo di Tab Browser -->
+<link rel="icon" type="image/png" sizes="32x32" href="pavicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="pavicon.png">
+<link rel="shortcut icon" href="pavicon.png" type="image/png">
+<link rel="apple-touch-icon" href="pavicon.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Poppins', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f7e8;
+      color: #1e3a2f;
+      min-height: 100vh;
+      overflow-x: hidden !important;
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    /* ========== LAYOUT SIDEBAR ========== */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 998;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background: linear-gradient(135deg, #2d6a4f 0%, #2e7d32 50%, #2d6a4f 100%);
+      z-index: 999;
+      transition: left 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sidebar.open {
+      left: 0;
+    }
+    
+    .sidebar-header {
+      padding: 20px 16px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+    
+    .sidebar-logo {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 8px;
+      border: 2px solid #ffd966;
+    }
+    
+    .sidebar-header h3 {
+      color: white;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    
+    .sidebar-header p {
+      color: rgba(255,255,255,0.7);
+      font-size: 10px;
+    }
+    
+    .sidebar-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 12px 16px 12px;
+      flex-shrink: 0;
+      margin-top: 10px;
+    }
+    
+    .sidebar-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      width: 100%;
+    }
+    
+    .sidebar-btn i {
+      width: 22px;
+      font-size: 16px;
+    }
+    
+    .sidebar-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateX(5px);
+    }
+    
+    .sidebar-btn.active {
+      background: #ffb74d;
+      color: #1e3a2f;
+    }
+    
+    .sidebar-footer {
+      padding: 12px 12px 18px 12px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      flex-shrink: 0;
+      margin-top: 10px;
+    }
+    
+    .user-status-sidebar {
+      background: rgba(255,255,255,0.12);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      margin-bottom: 10px;
+      text-align: center;
+      word-break: break-word;
+      color: white;
+    }
+    
+    .sidebar-login-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .sidebar-login-buttons button {
+      flex: 1;
+      background: white;
+      color: #1e4a2f;
+      border: none;
+      padding: 8px 0;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.75rem;
+    }
+    
+    .sidebar-login-buttons button.logout-btn {
+      background: #ff8a5c;
+      color: white;
+    }
+    
+    .login-form-sidebar {
+      margin-top: 10px;
+    }
+    
+    .login-form-sidebar input {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.75rem;
+    }
+    
+    .login-form-sidebar button {
+      width: 100%;
+      background: #ffb74d;
+      color: #1e3a2f;
+      border: none;
+      padding: 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    
+    .login-form-sidebar .cancel-login {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .error-msg-sidebar {
+      color: #ffb3b3;
+      font-size: 0.65rem;
+      margin-top: 5px;
+      text-align: center;
+    }
+    
+    .hamburger-btn {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s;
+      position: absolute;
+      left: 20px;
+      top: 20%;
+      transform: translateY(-50%);
+    }
+    
+    .hamburger-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-50%) scale(1.05);
+    }
+    
+    .main-container {
+      transition: margin-left 0.3s ease;
+      width: 100%;
+    }
+    
+    @media (min-width: 769px) {
+      .sidebar-overlay {
+        display: block;
+      }
+      body.sidebar-open .main-container {
+        margin-left: 280px;
+      }
+      .main-container {
+        margin-left: 0;
+        transition: margin-left 0.3s ease;
+      }
+      .hamburger-btn {
+        display: flex;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hamburger-btn {
+        display: flex;
+      }
+      .main-container {
+        margin-left: 0;
+      }
+      .sidebar {
+        left: -280px;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+      body.sidebar-open .main-container {
+        margin-left: 0;
+      }
+    }
+    
+    /* ========== STYLE KONTEN UTAMA ========== */
+    .container {
+      max-width: 1400px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(46, 125, 50, 0.25);
+      overflow: hidden;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #2d6a4f 0%, #2e7d32 50%, #2d6a4f 100%);
+      color: white;
+      padding: 20px 25px;
+      text-align: center;
+      position: relative;
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        padding: 16px;
+      }
+    }
+    
+    .logo-circle img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+    
+    .header h1 {
+      font-size: 1.8em;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+      white-space: normal;
+    }
+    
+    .header h4 {
+      opacity: 0.85;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    
+    .header-refresh {
+      display: inline-flex;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.3s;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    
+    .header-refresh:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+    
+    .filter-section {
+      background: white;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 160px;
+    }
+    
+    .filter-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+      transition: all 0.3s;
+      background: white;
+    }
+    
+    .filter-group input:focus,
+    .filter-group select:focus {
+      outline: none;
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    }
+    
+    .reset-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .reset-btn:hover {
+      background: #e2e8f0;
+    }
+    
+    .excel-btn {
+      background: #1e6f3f;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .excel-btn:hover {
+      background: #0d5a32;
+      transform: translateY(-2px);
+    }
+    
+    /* Sembunyikan tombol excel default */
+    #excelBtnContainer {
+      transition: all 0.3s;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 14px 16px 0 16px;
+      background: white;
+      flex-wrap: wrap;
+      border-bottom: 2px solid #eef2f7;
+    }
+    
+    .tab-btn {
+      background: #e7fde7;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+      color: #2d6a4f;
+      font-family: inherit;
+    }
+    
+    .tab-btn:hover {
+      background: #d4f5d4;
+      transform: translateY(-3px);
+    }
+    
+    .tab-btn.active {
+      background: linear-gradient(135deg, #2d6a4f 0%, #2e7d32 50%, #2d6a4f 100%);
+      color: white;
+    }
+    
+    .content {
+      padding: 20px;
+      background: white;
+      min-height: 500px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #2e7d32;
+    }
+    
+    @keyframes bookSpin {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(10deg) scale(1.1); }
+      75% { transform: rotate(-10deg) scale(1.1); }
+    }
+    
+    .loading .fa-calendar-alt {
+      display: inline-block;
+      animation: bookSpin 1s ease-in-out infinite;
+      font-size: 48px;
+      color: #43a047;
+      margin-bottom: 15px;
+    }
+    
+    .error {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 14px 18px;
+      border-radius: 10px;
+      color: #b91c1c;
+      margin: 20px 0;
+    }
+    
+    .no-data {
+      text-align: center;
+      padding: 60px;
+      color: #94a3b8;
+      font-size: 15px;
+    }
+    
+    /* ========== STYLE KARTU ========== */
+    .cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .group-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid #e2e8f0;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .group-card:hover {
+      box-shadow: 0 8px 25px rgba(46, 125, 50, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .card-header {
+      background: linear-gradient(135deg, #2d6a4f 0%, #2e7d32 50%, #2d6a4f 100%);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .group-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .group-info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    
+    .group-info-item i {
+      width: 20px;
+      opacity: 0.8;
+    }
+    
+    .group-info-item strong {
+      font-weight: 600;
+    }
+    
+    .member-count {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .students-table-wrapper {
+      overflow-x: auto;
+      padding: 0;
+    }
+    
+    .students-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    
+    .students-table th {
+      background: #f8fafc;
+      padding: 12px 12px;
+      text-align: center;
+      font-weight: 700;
+      color: #1e3a2f;
+      border-bottom: 2px solid #2e7d32;
+      font-size: 12px;
+    }
+    
+    .students-table td {
+      padding: 10px 12px;
+      text-align: center;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+    }
+    
+    .students-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .students-table tr:hover td {
+      background: #f0fdf4;
+    }
+    
+    .student-number {
+      font-weight: 600;
+      color: #2d6a4f;
+      width: 50px;
+    }
+    
+    .student-name {
+      font-weight: 600;
+      text-align: left;
+    }
+    
+    .student-class {
+      background: #e7fde7;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      font-weight: 600;
+      font-size: 11px;
+    }
+    
+    .student-marhalah {
+      background: #e3f2fd;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      font-weight: 600;
+      font-size: 11px;
+      color: #1565c0;
+    }
+    
+    .student-juz {
+      background: #fff3e0;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      font-weight: 600;
+      font-size: 11px;
+      color: #e67e22;
+    }
+    
+    @media (max-width: 768px) {
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .students-table th,
+      .students-table td {
+        padding: 8px 8px;
+        font-size: 11px;
+      }
+      
+      .student-name {
+        font-size: 12px;
+      }
+      
+      .group-info {
+        gap: 12px;
+      }
+      
+      .group-info-item {
+        font-size: 12px;
+      }
+      
+      .students-table th:nth-child(1),
+      .students-table td:nth-child(1) {
+        width: 40px;
+      }
+    }
+    
+    .stats {
+      margin-top: 20px;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-radius: 10px;
+      text-align: center;
+      color: #475569;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .stats .filter-badge {
+      background: #e2e8f0;
+      padding: 3px 10px;
+      border-radius: 16px;
+      font-size: 11px;
+      color: #1e293b;
+    }
+    
+    .footer {
+      background: #f8fafc;
+      padding: 12px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 11px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.2em; }
+      .tab-btn { padding: 8px 14px; font-size: 11px; }
+      .content { padding: 14px; }
+      .filter-section { padding: 12px; flex-direction: column; }
+      .filter-group { width: 100%; }
+      .logo-circle img { width: 50px; height: 50px; }
+      .header h4 { font-size: 10px; }
+    }
+    
+    @media print {
+      body { background: white; padding: 0; }
+      .sidebar, .hamburger-btn, .tabs, .footer, .filter-section, .excel-btn { display: none; }
+      .container { box-shadow: none; border-radius: 0; margin: 0; }
+      .main-container { margin-left: 0; }
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(3px);
+    }
+    
+    .loading-card {
+      background: white;
+      padding: 25px 35px;
+      border-radius: 20px;
+      text-align: center;
+      min-width: 260px;
+      max-width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 0.3s ease;
+    }
+    
+    .loading-card h3 {
+      color: #2d6a4f;
+      margin-bottom: 15px;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 10px;
+      background: #e9f5e6;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #2d6a4f, #40916c, #52b788);
+      border-radius: 20px;
+      transition: width 0.3s ease;
+    }
+    
+    .loading-percent {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2d6a4f;
+      margin: 8px 0;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e9f5e6;
+      border-top: 3px solid #2d6a4f;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="logo.png" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/60'">
+      <h3>Lajnah Tahfizh</h3>
+      <p>Ma'had Tamaamul Minnah, Bengle - Karawang</p>
+    </div>
+    
+    <div class="sidebar-buttons" id="sidebarNavMenu"></div>
+    
+    <div class="sidebar-footer">
+      <div id="userStatusSidebar" class="user-status-sidebar"></div>
+      <div id="sidebarLoginArea">
+        <div class="sidebar-login-buttons" id="sidebarBtnGroup">
+          <button id="sidebarLoginBtn" onclick="showLoginFormSidebar()">Login</button>
+          <button id="sidebarLogoutBtn" onclick="logout()" style="display:none;" class="logout-btn">Logout</button>
+        </div>
+        <div id="loginFormSidebar" class="login-form-sidebar" style="display:none;">
+          <input type="text" id="loginEmailSidebar" placeholder="Email atau ID">
+          <input type="password" id="loginPasswordSidebar" placeholder="Password">
+          <button onclick="doLoginFromSidebar()">Masuk</button>
+          <button onclick="hideLoginFormSidebar()" class="cancel-login">Batal</button>
+          <div id="loginErrorSidebar" class="error-msg-sidebar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="main-container" id="mainContainer">
+    <div class="container">
+      <div class="header">
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="logo-circle">
+          <img src="logo.png" alt="Logo" class="header-logo" onerror="this.src='https://via.placeholder.com/70'">
+        </div>
+        <h1>📖 Halaqoh Tahfizh</h1>
+        <h4>Ma'had Tamaamul Minnah, Bengle - Karawang</h4>
+        
+        <button class="header-refresh" onclick="loadAllData()">
+          <i class="fas fa-sync-alt"></i> Refresh Data
+        </button>
+      </div>
+      
+      <div class="filter-section">
+        <div class="filter-group">
+          <label>🔍 Cari Nama Santri</label>
+          <input type="text" id="searchInput" placeholder="Ketik nama santri..." onkeyup="applyFilters()">
+        </div>
+        <div class="filter-group">
+          <label>🏫 Filter Kelas</label>
+          <select id="classFilter" onchange="applyFilters()">
+            <option value="">Semua Kelas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>⛰️ Filter Marhalah</label>
+          <select id="marhalahFilter" onchange="applyFilters()">
+            <option value="">Semua Marhalah</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>💼 Filter Musammi</label>
+          <select id="musammiFilter" onchange="applyFilters()">
+            <option value="">Semua Musammi</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>📍 Filter Tempat</label>
+          <select id="tempatFilter" onchange="applyFilters()">
+            <option value="">Semua Tempat</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>&nbsp;</label>
+          <button class="reset-btn" onclick="resetFilters()">Reset Filter</button>
+        </div>
+        <div class="filter-group" id="excelBtnContainer" style="display:none !important;">
+          <label>&nbsp;</label>
+          <button class="excel-btn" onclick="exportToExcel()">
+            <i class="fas fa-file-excel"></i> Unduh Excel
+          </button>
+        </div>
+      </div>
+      
+      <div class="tabs" id="tabsContainer"></div>
+      
+      <div class="content">
+        <div id="loadingArea">
+          <div class="loading">
+            <i class="fas fa-calendar-alt"></i>
+            <p>Memuat Halaqoh...</p>
+          </div>
+        </div>
+        <div id="errorArea" style="display: none;"></div>
+        <div id="cardArea" style="display: none;"></div>
+      </div>
+      
+      <div class="footer">
+        <p>© 2026 - Lajnah Tahfizh Banin | Ma'had Tamaamul Minnah, Bengle - Karawang</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // ========== SIDEBAR TOGGLE ==========
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('active');
+      const isOpen = sidebar.classList.contains('open');
+      localStorage.setItem('sidebarState', isOpen ? 'open' : 'closed');
+      if (isOpen) {
+        document.body.classList.add('sidebar-open');
+        if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-times"></i>';
+      } else {
+        document.body.classList.remove('sidebar-open');
+        if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-bars"></i>';
+      }
+    }
+    
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('active');
+      document.body.classList.remove('sidebar-open');
+      localStorage.setItem('sidebarState', 'closed');
+      if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-bars"></i>';
+    }
+    
+    function loadSidebarState() {
+      const savedState = localStorage.getItem('sidebarState');
+      const isDesktop = window.innerWidth > 768;
+      if (savedState === 'open') {
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.add('active');
+        if (hamburgerBtn) hamburgerBtn.innerHTML = '<i class="fas fa-times"></i>';
+        if (isDesktop) document.body.classList.add('sidebar-open');
+      }
+    }
+    
+    if (hamburgerBtn) hamburgerBtn.addEventListener('click', toggleSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+    
+    window.addEventListener('resize', () => {
+      const isDesktop = window.innerWidth > 768;
+      const savedState = localStorage.getItem('sidebarState');
+      if (isDesktop && savedState === 'open') {
+        sidebar.classList.add('open');
+        document.body.classList.add('sidebar-open');
+      } else if (!isDesktop) {
+        sidebarOverlay.classList.remove('active');
+      }
+    });
+    
+    // ========== LOADING ==========
+    let loadingInterval = null;
+    let currentProgress = 0;
+    
+    function showLoadingWithProgress(title, steps = ['Menyiapkan', 'Memproses', 'Menyelesaikan']) {
+      hideLoading();
+      currentProgress = 0;
+      let stepIndex = 0;
+      const overlay = document.createElement('div');
+      overlay.className = 'loading-overlay';
+      overlay.id = 'loadingOverlay';
+      overlay.innerHTML = `
+        <div class="loading-card">
+          <h3>${title}</h3>
+          <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <div class="loading-percent" id="loadingPercent">0%</div>
+          <div class="loading-step" id="loadingStep">${steps[0]}<span class="dots"></span></div>
+          <div class="loading-text" id="loadingText">Mohon tunggu sebentar...</div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      loadingInterval = setInterval(() => {
+        if (currentProgress < 90) {
+          currentProgress += Math.random() * 8;
+          if (currentProgress > 90) currentProgress = 90;
+          updateProgress(currentProgress);
+        }
+        const newStepIndex = Math.floor(currentProgress / 30);
+        if (newStepIndex !== stepIndex && newStepIndex < steps.length) {
+          stepIndex = newStepIndex;
+          const stepEl = document.getElementById('loadingStep');
+          if (stepEl) stepEl.innerHTML = steps[stepIndex] + '<span class="dots"></span>';
+        }
+      }, 200);
+    }
+    
+    function updateProgress(percent) {
+      const progressBar = document.getElementById('progressBar');
+      const percentEl = document.getElementById('loadingPercent');
+      if (progressBar) progressBar.style.width = percent + '%';
+      if (percentEl) percentEl.innerHTML = Math.floor(percent) + '%';
+    }
+    
+    function completeLoading() { setTimeout(() => hideLoading(), 800); }
+    function hideLoading() {
+      if (loadingInterval) clearInterval(loadingInterval);
+      const overlay = document.getElementById('loadingOverlay');
+      if (overlay) overlay.remove();
+    }
+    
+    // ========== LOGIN ==========
+    const GAS_LOGIN_URL = 'https://script.google.com/macros/s/AKfycbxc4eVb8tWMl2CoJ3XEEK_lu7e917IB2SdzYxJTpATtiimZ69ELCP8GkGNZqEJ85swW6w/exec';
+    let currentUser = null;
+    
+    const menuForRole = {
+      public: [
+        { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'Informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'Nasihat.html' },
+        { id: 'program', label: '📚 Program Tahfiz', type: 'link', url: 'Program Tahfiz.html' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'link', url: 'Musammi.html' },
+        { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+        { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'Tajwid.html' },
+        { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+      ],
+      admin_biasa: [
+        { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'Informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'Nasihat.html' },
+        { id: 'program', label: '📚 Program Tahfiz', type: 'link', url: 'Program Tahfiz.html' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'link', url: 'Musammi.html' },
+        { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+        { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'Tajwid.html' },
+        { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type: 'link', url: 'Pajangan Jadwal Penguji.html' },
+        { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
+        { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
+        { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+      ],
+      super_admin: [
+        { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'Informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'Nasihat.html' },
+        { id: 'program', label: '📚 Program Tahfiz', type: 'link', url: 'Program Tahfiz.html' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'link', url: 'Musammi.html' },
+        { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+        { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+        { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'Tajwid.html' },
+        { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
+        { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type:'link', url: 'Pajangan Jadwal Penguji.html' },
+        { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
+        { id: 'buatJadwalUjian', label: '✏️ Buat Jadwal Ujian', type:'link', url: 'Jadwal Ujian Generator.html' },
+        { id: 'buatJadwalPenguji', label: '📝 Buat Jadwal Penguji', type:'link', url: 'Jadwal Penguji Generator.html' },
+        { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+      ]
+    };
+    
+    function renderNavSidebar() {
+      const navContainer = document.getElementById('sidebarNavMenu');
+      if (!navContainer) return;
+      navContainer.innerHTML = '';
+      let menus = menuForRole.public;
+      if (currentUser) menus = (currentUser.role === 'super_admin') ? menuForRole.super_admin : menuForRole.admin_biasa;
+      menus.forEach(menu => {
+        const btn = document.createElement('button');
+        btn.className = 'sidebar-btn';
+        btn.innerHTML = menu.label;
+        btn.onclick = () => {
+          if (menu.type === 'link') window.location.href = menu.url;
+          else if (menu.type === 'section') { localStorage.setItem('targetSection', menu.target); window.location.href = 'index.html'; }
+          closeSidebar();
+        };
+        navContainer.appendChild(btn);
+      });
+    }
+    
+    function showLoginFormSidebar() {
+      if (!currentUser) {
+        document.getElementById('loginFormSidebar').style.display = 'block';
+        document.getElementById('sidebarLoginBtn').style.display = 'none';
+      }
+    }
+    
+    function hideLoginFormSidebar() {
+      document.getElementById('loginFormSidebar').style.display = 'none';
+      document.getElementById('sidebarLoginBtn').style.display = 'block';
+    }
+    
+    function doLoginFromSidebar() {
+      const login = document.getElementById('loginEmailSidebar').value.trim();
+      const password = document.getElementById('loginPasswordSidebar').value;
+      if (!login || !password) {
+        document.getElementById('loginErrorSidebar').innerHTML = 'Harap isi email/ID dan password';
+        return;
+      }
+      showLoadingWithProgress('Login', ['Memeriksa akun', 'Verifikasi password', 'Mengambil data user']);
+      const callbackName = 'jsonp_callback_' + Date.now();
+      window[callbackName] = function(response) {
+        delete window[callbackName];
+        if (response.success) {
+          currentUser = { role: response.role, email: response.email, id: response.id };
+          localStorage.setItem('tahfidz_user', JSON.stringify(currentUser));
+          
+          // Update UI langsung
+          updateSidebarUI();
+          renderNavSidebar();
+          
+          completeLoading();
+          setTimeout(() => {
+            document.getElementById('loginFormSidebar').style.display = 'none';
+            document.getElementById('sidebarLoginBtn').style.display = 'none';
+            document.getElementById('sidebarLogoutBtn').style.display = 'block';
+            document.getElementById('loginErrorSidebar').innerHTML = '';
+            
+            // Refresh data tanpa reload halaman
+            if (rawData) {
+              renderCards();
+            } else {
+              loadAllData();
+            }
+          }, 1000);
+        } else {
+          completeLoading();
+          setTimeout(() => {
+            document.getElementById('loginErrorSidebar').innerHTML = response.message || 'Login gagal';
+          }, 800);
+        }
+      };
+      const url = `${GAS_LOGIN_URL}?callback=${callbackName}&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`;
+      const script = document.createElement('script');
+      script.src = url;
+      document.body.appendChild(script);
+    }
+    
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('tahfidz_user');
+      updateSidebarUI();
+      renderNavSidebar();
+      hideLoginFormSidebar();
+      // Refresh tampilan
+      if (rawData) {
+        renderCards();
+      }
+    }
+    
+    function updateSidebarUI() {
+      const userStatusDiv = document.getElementById('userStatusSidebar');
+      const loginBtn = document.getElementById('sidebarLoginBtn');
+      const logoutBtn = document.getElementById('sidebarLogoutBtn');
+      const excelBtnContainer = document.getElementById('excelBtnContainer');
+      
+      if (!excelBtnContainer) return;
+      
+      console.log('Update UI - Current user:', currentUser);
+      
+      if (currentUser && currentUser.role) {
+        const roleText = currentUser.role === 'super_admin' ? 'Operator' : 
+                         (currentUser.role === 'admin_biasa' ? 'Musammi' : 'Musammi');
+        userStatusDiv.innerHTML = `💼 ${currentUser.email || currentUser.id} (${roleText})`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+        
+        // HANYA super_admin yang bisa lihat tombol Excel
+        if (currentUser.role === 'super_admin') {
+          excelBtnContainer.style.display = 'block';
+        } else {
+          excelBtnContainer.style.display = 'none';
+        }
+      } else {
+        userStatusDiv.innerHTML = '';
+        loginBtn.style.display = 'block';
+        logoutBtn.style.display = 'none';
+        excelBtnContainer.style.display = 'none';
+      }
+    }
+    
+    function loadStoredUser() {
+      const stored = localStorage.getItem('tahfidz_user');
+      if (stored) {
+        try { 
+          currentUser = JSON.parse(stored);
+          console.log('User loaded from storage:', currentUser);
+        } catch(e) {
+          console.error(e);
+          currentUser = null;
+        }
+      } else {
+        currentUser = null;
+      }
+      updateSidebarUI();
+      renderNavSidebar();
+    }
+    
+    // ========== DATA HALAQOH ==========
+    const API_URL = "https://script.google.com/macros/s/AKfycby5KOm1NpIg51R1qQ3CaynC7qRkpjpmAtY5Y9sk2kkWH0ut1i-g2fjvgZB7Bf6FmhU/exec";
+    
+    let sheetsList = [];
+    let currentSheet = '';
+    let sheetDataCache = {};
+    let rawData = null;
+    
+    function findColumnIndex(headers, possibleNames) {
+      for (let i = 0; i < headers.length; i++) {
+        const header = String(headers[i]).toLowerCase().trim();
+        for (let name of possibleNames) {
+          if (header === name.toLowerCase() || header.includes(name.toLowerCase())) return i;
+        }
+      }
+      return -1;
+    }
+    
+    function processDataToGroups(data) {
+      if (!data || data.length < 2) return [];
+      
+      const headers = data[0];
+      const noCol = findColumnIndex(headers, ['no', 'nomor', '#', 'no.']);
+      const tempatCol = findColumnIndex(headers, ['tempat', 'lokasi', 'majlis', 'tempat halaqoh']);
+      const musammiCol = findColumnIndex(headers, ['musammi', 'penguji', 'ustadz', 'guru', 'musammi/penguji']);
+      const namaCol = findColumnIndex(headers, ['nama', 'nama santri', 'santri', 'nama lengkap']);
+      const kelasCol = findColumnIndex(headers, ['kelas', 'class', 'rombel', 'tingkat']);
+      const marhalahCol = findColumnIndex(headers, ['marhalah', 'marhalah tahfizh', 'tahap', 'level', 'jenjang']);
+      const juzCol = findColumnIndex(headers, ['juz', 'juz hafalan', 'hafalan', 'juz yang dihafal']);
+      
+      console.log('Column indices:', { noCol, tempatCol, musammiCol, namaCol, kelasCol, marhalahCol, juzCol });
+      
+      const groups = [];
+      const groupMap = new Map();
+      
+      for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        const tempat = tempatCol !== -1 ? (row[tempatCol] || '').toString().trim() : '';
+        const musammi = musammiCol !== -1 ? (row[musammiCol] || '').toString().trim() : '';
+        const key = `${tempat}|${musammi}`;
+        
+        let student = {
+          no: noCol !== -1 ? (row[noCol] || i) : i,
+          nama: namaCol !== -1 ? (row[namaCol] || '').toString().trim() : '',
+          kelas: kelasCol !== -1 ? (row[kelasCol] || '').toString().trim() : '',
+          marhalah: marhalahCol !== -1 ? (row[marhalahCol] || '').toString().trim() : '',
+          juz: juzCol !== -1 ? (row[juzCol] || '').toString().trim() : ''
+        };
+        
+        if (!student.nama) continue;
+        
+        if (!groupMap.has(key)) {
+          groupMap.set(key, {
+            tempat: tempat,
+            musammi: musammi,
+            students: []
+          });
+        }
+        groupMap.get(key).students.push(student);
+      }
+      
+      for (let [key, group] of groupMap.entries()) {
+        groups.push(group);
+      }
+      
+      console.log('Groups created:', groups.length);
+      return groups;
+    }
+    
+    function getFilteredGroups(groups) {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      const kelasFilter = document.getElementById('classFilter').value;
+      const marhalahFilter = document.getElementById('marhalahFilter').value;
+      const musammiFilter = document.getElementById('musammiFilter').value;
+      const tempatFilter = document.getElementById('tempatFilter').value;
+      
+      if (!searchTerm && !kelasFilter && !marhalahFilter && !musammiFilter && !tempatFilter) return groups;
+      
+      return groups.filter(group => {
+        if (tempatFilter && group.tempat !== tempatFilter) return false;
+        if (musammiFilter && group.musammi !== musammiFilter) return false;
+        
+        const matchingStudents = group.students.filter(student => {
+          if (kelasFilter && student.kelas !== kelasFilter) return false;
+          if (marhalahFilter && student.marhalah !== marhalahFilter) return false;
+          if (searchTerm && !student.nama.toLowerCase().includes(searchTerm)) return false;
+          return true;
+        });
+        
+        group._filteredStudents = matchingStudents;
+        return matchingStudents.length > 0;
+      }).map(group => {
+        if (group._filteredStudents) {
+          return { ...group, students: group._filteredStudents };
+        }
+        return group;
+      });
+    }
+    
+    function renderCards() {
+      const container = document.getElementById('cardArea');
+      if (!rawData || rawData.length < 2) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
+            <i class="fas fa-database" style="font-size: 48px; color: #ef4444; margin-bottom: 16px; display: block;"></i>
+            <h3 style="color: #991b1b; margin-bottom: 8px;"> Halaqoh belum tersedia</h3>
+            <p style="color: #7f1d1d; margin-bottom: 16px;">Saat ini belum ada data Halaqoh Santri.</p>
+            <p style="color: #b91c1c; font-size: 13px;"><i class="fas fa-envelope"></i> Silakan hubungi admin untuk menambahkan data.</p>
+          </div>
+        `;
+        document.getElementById('loadingArea').style.display = 'none';
+        container.style.display = 'block';
+        return;
+      }
+      
+      let groups = processDataToGroups(rawData);
+      groups = getFilteredGroups(groups);
+      
+      if (groups.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
+            <i class="fas fa-database" style="font-size: 48px; color: #ef4444; margin-bottom: 16px; display: block;"></i>
+            <h3 style="color: #991b1b; margin-bottom: 8px;"> Data tidak ditemukan!</h3>
+            <p style="color: #7f1d1d; margin-bottom: 16px;">Kata kunci yang Antum masukkan tidak terdata</p>
+            <p style="color: #b91c1c; font-size: 13px;"><i class="fas fa-envelope"></i> Silakan hubungi admin jika ada ketidaksesuaian data.</p>
+          </div>
+        `;        
+        document.getElementById('loadingArea').style.display = 'none';
+        container.style.display = 'block';
+        return;
+      }
+      
+      let html = '<div class="cards-container">';
+      
+      for (let group of groups) {
+        html += `
+          <div class="group-card">
+            <div class="card-header">
+              <div class="group-info">
+                <div class="group-info-item"><i class="fas fa-map-marker-alt"></i> <strong>${escapeHtml(group.tempat || '-')}</strong></div>
+                <div class="group-info-item"><i class="fas fa-chalkboard-teacher"></i> <strong>${escapeHtml(group.musammi || '-')}</strong></div>
+              </div>
+              <div class="member-count"><i class="fas fa-users"></i> ${group.students.length} Santri</div>
+            </div>
+            <div class="students-table-wrapper">
+              <table class="students-table">
+                <thead>
+                  <tr><th>No</th><th>Nama Santri</th><th>Kelas</th><th>Marhalah</th><th>Juz</th></tr>
+                </thead>
+                <tbody>
+        `;
+        
+        group.students.forEach((student, idx) => {
+          html += `
+            <tr>
+              <td class="student-number">${idx + 1}</td>
+              <td class="student-name">${escapeHtml(student.nama)}</td>
+              <td><span class="student-class">${escapeHtml(student.kelas || '-')}</span></td>
+              <td><span class="student-marhalah">${escapeHtml(student.marhalah || '-')}</span></td>
+              <td><span class="student-juz">Juz ${escapeHtml(student.juz || '-')}</span></td>
+            </tr>
+          `;
+        });
+        
+        html += `
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+      
+      html += '</div>';
+      
+      const totalSantri = groups.reduce((sum, g) => sum + g.students.length, 0);
+      const filterText = getFilterText();
+      const statsHtml = `<div class="stats">
+        <span>📊 <strong>${groups.length} Kelompok</strong> | <strong>${totalSantri} Santri</strong></span>
+        <span>🕒 Update: ${new Date().toLocaleString('id-ID')}</span>
+        ${filterText ? `<span class="filter-badge">${filterText}</span>` : ''}
+      </div>`;
+      
+      container.innerHTML = html + statsHtml;
+      document.getElementById('loadingArea').style.display = 'none';
+      container.style.display = 'block';
+    }
+    
+    function getFilterText() {
+      const searchTerm = document.getElementById('searchInput').value;
+      const kelasFilter = document.getElementById('classFilter').value;
+      const marhalahFilter = document.getElementById('marhalahFilter').value;
+      const musammiFilter = document.getElementById('musammiFilter').value;
+      const tempatFilter = document.getElementById('tempatFilter').value;
+      
+      if (searchTerm && kelasFilter && marhalahFilter && musammiFilter && tempatFilter) return `🔍 "${searchTerm}" + Kelas: ${kelasFilter} + Marhalah: ${marhalahFilter} + Musammi: ${musammiFilter} + Tempat: ${tempatFilter}`;
+      if (searchTerm && kelasFilter && marhalahFilter) return `🔍 "${searchTerm}" + Kelas: ${kelasFilter} + Marhalah: ${marhalahFilter}`;
+      if (kelasFilter && marhalahFilter) return `🏫 Kelas: ${kelasFilter} + ⛰️ Marhalah: ${marhalahFilter}`;
+      if (searchTerm) return `🔍 "${searchTerm}"`;
+      if (kelasFilter) return `🏫 Kelas: ${kelasFilter}`;
+      if (marhalahFilter) return `⛰️ Marhalah: ${marhalahFilter}`;
+      if (musammiFilter) return `💼 Musammi: ${musammiFilter}`;
+      if (tempatFilter) return `📍 Tempat: ${tempatFilter}`;
+      return '';
+    }
+    
+    function updateFiltersData(data) {
+      if (!data || data.length < 2) return;
+      
+      const headers = data[0];
+      const kelasCol = findColumnIndex(headers, ['kelas', 'class', 'rombel']);
+      const marhalahCol = findColumnIndex(headers, ['marhalah', 'marhalah tahfizh', 'tahap', 'level', 'jenjang']);
+      const musammiCol = findColumnIndex(headers, ['musammi', 'penguji']);
+      const tempatCol = findColumnIndex(headers, ['tempat', 'lokasi']);
+      
+      const kelasSet = new Set();
+      const marhalahSet = new Set();
+      const musammiSet = new Set();
+      const tempatSet = new Set();
+      
+      for (let i = 1; i < data.length; i++) {
+        if (kelasCol !== -1 && data[i][kelasCol]) kelasSet.add(data[i][kelasCol].toString().trim());
+        if (marhalahCol !== -1 && data[i][marhalahCol]) marhalahSet.add(data[i][marhalahCol].toString().trim());
+        if (musammiCol !== -1 && data[i][musammiCol]) musammiSet.add(data[i][musammiCol].toString().trim());
+        if (tempatCol !== -1 && data[i][tempatCol]) tempatSet.add(data[i][tempatCol].toString().trim());
+      }
+      
+      const kelasFilter = document.getElementById('classFilter');
+      const marhalahFilter = document.getElementById('marhalahFilter');
+      const musammiFilter = document.getElementById('musammiFilter');
+      const tempatFilter = document.getElementById('tempatFilter');
+      
+      if (kelasFilter) {
+        kelasFilter.innerHTML = '<option value="">Semua Kelas</option>';
+        Array.from(kelasSet).sort().forEach(k => kelasFilter.innerHTML += `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`);
+      }
+      
+      if (marhalahFilter) {
+        marhalahFilter.innerHTML = '<option value="">Semua Marhalah</option>';
+        Array.from(marhalahSet).sort().forEach(m => marhalahFilter.innerHTML += `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`);
+      }
+      
+      if (musammiFilter) {
+        musammiFilter.innerHTML = '<option value="">Semua Musammi</option>';
+        Array.from(musammiSet).sort().forEach(m => musammiFilter.innerHTML += `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`);
+      }
+      
+      if (tempatFilter) {
+        tempatFilter.innerHTML = '<option value="">Semua Tempat</option>';
+        Array.from(tempatSet).sort().forEach(t => tempatFilter.innerHTML += `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`);
+      }
+    }
+    
+    async function getSheets() {
+      try {
+        const response = await fetch(`${API_URL}?action=getSheets`, { mode: 'cors', headers: { 'Accept': 'application/json' } });
+        const result = await response.json();
+        return result.sheets || [];
+      } catch (error) { return []; }
+    }
+    
+    async function getSheetData(sheetName) {
+      try {
+        const response = await fetch(`${API_URL}?action=getData&sheetName=${encodeURIComponent(sheetName)}`, { mode: 'cors', headers: { 'Accept': 'application/json' } });
+        const result = await response.json();
+        return result.data || [];
+      } catch (error) { return []; }
+    }
+    
+    async function loadAllData() {
+      document.getElementById('loadingArea').style.display = 'block';
+      document.getElementById('errorArea').style.display = 'none';
+      document.getElementById('cardArea').style.display = 'none';
+      
+      sheetsList = await getSheets();
+      if (sheetsList.length === 0) {
+        document.getElementById('loadingArea').style.display = 'none';
+        document.getElementById('errorArea').style.display = 'block';
+        document.getElementById('errorArea').innerHTML = '<div class="error">❌ Tidak ada sheet ditemukan</div>';
+        return;
+      }
+      
+      for (const sheetName of sheetsList) {
+        sheetDataCache[sheetName] = await getSheetData(sheetName);
+      }
+      
+      createTabs(sheetsList);
+      currentSheet = sheetsList[0];
+      await switchToSheet(currentSheet);
+    }
+    
+    function createTabs(sheetNames) {
+      const tabsContainer = document.getElementById('tabsContainer');
+      tabsContainer.innerHTML = '';
+      sheetNames.forEach((sheetName, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn';
+        if (index === 0) btn.classList.add('active');
+        btn.textContent = sheetName;
+        btn.onclick = () => switchSheet(sheetName, btn);
+        tabsContainer.appendChild(btn);
+      });
+    }
+    
+    async function switchSheet(sheetName, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSheet = sheetName;
+      await switchToSheet(sheetName);
+    }
+    
+    async function switchToSheet(sheetName) {
+      rawData = sheetDataCache[sheetName];
+      document.getElementById('searchInput').value = '';
+      updateFiltersData(rawData);
+      renderCards();
+    }
+    
+    function applyFilters() { if (rawData) renderCards(); }
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('classFilter').value = '';
+      document.getElementById('marhalahFilter').value = '';
+      document.getElementById('musammiFilter').value = '';
+      document.getElementById('tempatFilter').value = '';
+      if (rawData) renderCards();
+    }
+    
+    function exportToExcel() {
+      if (!currentUser || currentUser.role !== 'super_admin') {
+        alert('Fitur ini hanya untuk Super Admin!');
+        return;
+      }
+      
+      let groups = processDataToGroups(rawData);
+      groups = getFilteredGroups(groups);
+      
+      let excelRows = [['Tempat', 'Musammi', 'No', 'Nama Santri', 'Kelas', 'Marhalah', 'Juz']];
+      for (let group of groups) {
+        group.students.forEach((student, idx) => {
+          excelRows.push([
+            group.tempat, group.musammi, idx + 1, student.nama, student.kelas, student.marhalah, student.juz
+          ]);
+        });
+      }
+      
+      const wsData = excelRows;
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Halaqoh');
+      XLSX.writeFile(wb, `Halaqoh_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+    }
+    
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Inisialisasi
+    loadSidebarState();
+    loadStoredUser();
+    loadAllData();
+  </script>
+</body>
+</html>

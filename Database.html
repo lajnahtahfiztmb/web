@@ -1,0 +1,181 @@
+Jadwal Ujian / Data Juz
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0t-8icF4bIYLzkTSa-op2cJSUfAGQO4Hyy_SMNuiMrAgxDgzu5XcoSytpJd0O3Ldr/exec'; // GANTI DENGAN URL ASLI
+
+Jadwal Penguji Generator
+        const API_URL = "https://script.google.com/macros/s/AKfycbyx7SnpMgh6uV7VMotin3UqO1_q3fZUD-sBGQUXPsf7ivUVMbG9YHMLmGZXTdbcrpSu/exec";
+
+Pajangan Jadwal
+    const API_URL = "https://script.google.com/macros/s/AKfycbwljtEBcIY2HUHYB-RFHC_-dVLxehuMSJyQbhIVSNaOTZlPI49cFbRbjbShtGavrU5AZA/exec"; // GANTI DENGAN URL ANDA
+
+Pajangan Penguji
+https://script.google.com/macros/s/AKfycbzgicCP19SPail0HNXcDmrxNIJzz1qe2xg_7VLt5bCba6BSaNMtkKgtjdH07rkrvk90jA/exec
+
+Login
+https://script.google.com/macros/s/AKfycbxc4eVb8tWMl2CoJ3XEEK_lu7e917IB2SdzYxJTpATtiimZ69ELCP8GkGNZqEJ85swW6w/exec
+
+Panduan
+https://script.google.com/macros/s/AKfycbyPJ2wbGezGtbf2NGwCUrwpei5sOIlZtHuz7sw8fKzvGC12wnCTr9Qw7QNBkuhvz4FVuw/exec
+
+Data Alumni
+https://script.google.com/macros/s/AKfycbxUrl6OgWX9_4JGcKMlBuGVrcoGoq9LMmzCdGvX3Fh84pZtQeZvhSWVoKta1iSasx0log/exec
+
+Halaqoh
+https://script.google.com/macros/s/AKfycby5KOm1NpIg51R1qQ3CaynC7qRkpjpmAtY5Y9sk2kkWH0ut1i-g2fjvgZB7Bf6FmhU/exec
+
+Voting
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwVAqKvtBgOYBCGyjRPbihvdutiGh7llAV-Sgj5LvnAUkbCQlZAhdUDvWjbbVwmc-mi/exec";
+
+Informasi
+    const GAS_INFORMASI_URL = 'https://script.google.com/macros/s/AKfycbzYMreF1LjBwn4RHfqhTjAdUG2djmYQF0tRmpzDVcZx4_vs_ToVKc11sus4NrLM7q6Z/exec';
+
+Nasihat
+    const GAS_NASIHAT_URL = 'https://script.google.com/macros/s/AKfycbxTCqR8Q4Za-JA8mdr-lTnL4mG9q8N2R5rD1d0100X6jweqHTtFHOJhT5C137cAtTXBBg/exec';
+
+Musammi
+https://script.google.com/macros/s/AKfycby7bRz3edLPHyZc_3YMOUofAHf0PDmhvTwrHV2LzLUZa0d3kUGribn25IwxhJLslofndg/exec
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Favicon / Logo di Tab Browser -->
+<link rel="icon" type="image/png" sizes="32x32" href="pavicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="pavicon.png">
+<link rel="shortcut icon" href="pavicon.png" type="image/png">
+<link rel="apple-touch-icon" href="pavicon.png">
+
+    const menuForRole = {
+      public: [
+        { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'Informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'Nasihat.html' },
+        { id: 'program', label: '📚 Program Tahfiz', type: 'link', url: 'Program Tahfiz.html' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'link', url: 'Musammi.html' },
+        { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+        { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+        { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'Tajwid.html' },
+        { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+      ],
+      admin_biasa: [
+        { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'Informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'Nasihat.html' },
+        { id: 'program', label: '📚 Program Tahfiz', type: 'link', url: 'Program Tahfiz.html' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'link', url: 'Musammi.html' },
+        { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+        { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+        { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'Tajwid.html' },
+        { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type: 'link', url: 'Pajangan Jadwal Penguji.html' },
+        { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
+        { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
+        { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+      ],
+      super_admin: [
+        { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'Informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'Nasihat.html' },
+        { id: 'program', label: '📚 Program Tahfiz', type: 'link', url: 'Program Tahfiz.html' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'link', url: 'Musammi.html' },
+        { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+        { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+        { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'Tajwid.html' },
+        { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
+        { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type:'link', url: 'Pajangan Jadwal Penguji.html' },
+        { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
+        { id: 'buatJadwalUjian', label: '✏️ Buat Jadwal Ujian', type:'link', url: 'Jadwal Ujian Generator.html' },
+        { id: 'buatJadwalPenguji', label: '📝 Buat Jadwal Penguji', type:'link', url: 'Jadwal Penguji Generator.html' },
+        { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+      ]
+    };
+    
+    function renderNavSidebar() {
+      const navContainer = document.getElementById('sidebarNavMenu');
+      if (!navContainer) return;
+      navContainer.innerHTML = '';
+      let menus = currentUser ? (currentUser.role === 'super_admin' ? menuForRole.super_admin : menuForRole.admin_biasa) : menuForRole.public;
+      menus.forEach(menu => {
+        const btn = document.createElement('button');
+        btn.className = 'sidebar-btn';
+        btn.innerHTML = menu.label;
+        btn.onclick = () => {
+          if (menu.type === 'link') window.location.href = menu.url;
+          else if (menu.type === 'section') {
+            localStorage.setItem('targetSection', menu.target);
+            window.location.href = 'index.html';
+          }
+          closeSidebar();
+        };
+        navContainer.appendChild(btn);
+      });
+    }
+    
+    function showLoginFormSidebar() {
+      document.getElementById('loginFormSidebar').style.display = 'block';
+      document.getElementById('sidebarLoginBtn').style.display = 'none';
+      document.getElementById('loginErrorSidebar').innerHTML = '';
+    }
+    
+    function hideLoginFormSidebar() {
+      document.getElementById('loginFormSidebar').style.display = 'none';
+      document.getElementById('sidebarLoginBtn').style.display = 'block';
+      document.getElementById('loginEmailSidebar').value = '';
+      document.getElementById('loginPasswordSidebar').value = '';
+    }
+    
+    function doLoginFromSidebar() {
+      const login = document.getElementById('loginEmailSidebar').value.trim();
+      const password = document.getElementById('loginPasswordSidebar').value;
+      if (!login || !password) {
+        document.getElementById('loginErrorSidebar').innerHTML = 'Harap isi email/ID dan password';
+        return;
+      }
+      const callbackName = 'jsonp_callback_' + Date.now();
+      window[callbackName] = function(response) {
+        delete window[callbackName];
+        if (response.success) {
+          currentUser = { role: response.role, email: response.email, id: response.id };
+          localStorage.setItem('tahfidz_user', JSON.stringify(currentUser));
+          updateSidebarUI();
+          renderNavSidebar();
+          hideLoginFormSidebar();
+          location.reload();
+        } else {
+          document.getElementById('loginErrorSidebar').innerHTML = response.message || 'Login gagal';
+        }
+      };
+      const url = `${GAS_LOGIN_URL}?callback=${callbackName}&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`;
+      const script = document.createElement('script'); script.src = url; document.body.appendChild(script);
+    }
+    
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('tahfidz_user');
+      updateSidebarUI();
+      renderNavSidebar();
+      location.reload();
+    }
+    
+    function updateSidebarUI() {
+      const userStatusDiv = document.getElementById('userStatusSidebar');
+      const loginBtn = document.getElementById('sidebarLoginBtn');
+      const logoutBtn = document.getElementById('sidebarLogoutBtn');
+      if (currentUser) {
+        userStatusDiv.innerHTML = `🎓 ${currentUser.email} (${currentUser.role === 'super_admin' ? 'Operator' : 'Musammi'})`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+      } else {
+        userStatusDiv.innerHTML = '';
+        loginBtn.style.display = 'block';
+        logoutBtn.style.display = 'none';
+      }
+    }
+    
+    function loadStoredUser() {
+      const stored = localStorage.getItem('tahfidz_user');
+      if (stored) { try { currentUser = JSON.parse(stored); updateSidebarUI(); renderNavSidebar(); } catch(e) {} }
+      else { updateSidebarUI(); renderNavSidebar(); }
+    }

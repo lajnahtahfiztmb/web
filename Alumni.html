@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Alumni 30 Juz TMB</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="pavicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="pavicon.png">
+  <link rel="shortcut icon" href="pavicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="pavicon.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Poppins', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f7e8;
+      color: #1e3a2f;
+      min-height: 100vh;
+      overflow-x: hidden;
+      width: 100%;
+    }
+    
+    /* ========== SIDEBAR ========== */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 998;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+    
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background: linear-gradient(135deg, #2d6a4f 0%, #2e7d32 50%, #2d6a4f 100%);
+      z-index: 999;
+      transition: left 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sidebar.open { left: 0; }
+    
+    .sidebar-header {
+      padding: 20px 16px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .sidebar-logo {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 8px;
+      border: 2px solid #ffd966;
+    }
+    
+    .sidebar-header h3 { color: white; font-size: 15px; }
+    .sidebar-header p { color: rgba(255,255,255,0.7); font-size: 10px; }
+    
+    .sidebar-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 12px 16px 12px;
+      margin-top: 10px;
+    }
+    
+    .sidebar-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+    
+    .sidebar-btn:hover { background: rgba(255,255,255,0.25); transform: translateX(5px); }
+    
+    .sidebar-footer {
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      margin-top: auto;
+    }
+    
+    .user-status-sidebar {
+      background: rgba(255,255,255,0.12);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      text-align: center;
+      color: white;
+      margin-bottom: 10px;
+    }
+    
+    .sidebar-login-buttons { display: flex; gap: 8px; }
+    
+    .sidebar-login-buttons button {
+      flex: 1;
+      background: white;
+      color: #1e4a2f;
+      border: none;
+      padding: 8px 0;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    
+    .sidebar-login-buttons button.logout-btn { background: #ff8a5c; color: white; }
+    
+    .login-form-sidebar { margin-top: 10px; }
+    
+    .login-form-sidebar input {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.75rem;
+    }
+    
+    .login-form-sidebar button {
+      width: 100%;
+      background: #ffb74d;
+      color: #1e3a2f;
+      border: none;
+      padding: 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+    
+    .hamburger-btn {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s;
+      position: absolute;
+      left: 20px;
+      top: 20%;
+      transform: translateY(-50%);
+    }
+    
+    .hamburger-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-50%) scale(1.05);
+    }
+    
+    .main-container {
+      transition: margin-left 0.3s ease;
+      width: 100%;
+    }
+    
+    @media (min-width: 769px) {
+      body.sidebar-open .main-container { margin-left: 280px; }
+    }
+    
+    /* ========== STYLE KONTEN UTAMA ========== */
+    .container {
+      max-width: 1400px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(46, 125, 50, 0.25);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #2d6a4f 0%, #2e7d32 50%, #2d6a4f 100%);
+      color: white;
+      padding: 20px 25px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .logo-circle img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+    
+    .header h1 { font-size: 1.8em; margin-bottom: 5px; }
+    .header h4 { opacity: 0.85; font-size: 12px; }
+    
+    .header-refresh {
+      display: inline-flex;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    
+    .filter-section {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 160px;
+    }
+    
+    .filter-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 5px;
+    }
+    
+    .filter-group input, .filter-group select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+    
+    .reset-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 14px 16px 0 16px;
+      background: white;
+      flex-wrap: wrap;
+      border-bottom: 2px solid #eef2f7;
+    }
+    
+    .tab-btn {
+      background: #e7fde7;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+      color: #2d6a4f;
+    }
+    
+    .tab-btn:hover { background: #d0f0d0; transform: translateY(-2px); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #2d6a4f 0%, #2e7d32 100%);
+      color: white;
+    }
+    
+    .content { padding: 20px; background: white; min-height: 500px; }
+    
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #2e7d32;
+    }
+    
+    .loading .fa-calendar-alt {
+      font-size: 48px;
+      color: #43a047;
+      animation: bookSpin 1s ease-in-out infinite;
+      margin-bottom: 15px;
+    }
+    
+    @keyframes bookSpin {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(10deg); }
+    }
+    
+    .error {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 14px 18px;
+      border-radius: 10px;
+      color: #b91c1c;
+    }
+    
+    .no-data {
+      text-align: center;
+      padding: 60px;
+      color: #94a3b8;
+    }
+    
+    /* ========== CARDS GRID ========== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 30px rgba(46,125,50,0.15);
+    }
+    
+    /* Card spesial untuk nilai tinggi (A) */
+    .card.card-special {
+      border: 2px solid transparent;
+      background: linear-gradient(white, white) padding-box,
+                  linear-gradient(135deg, #ffd700, #ffb347, #ffd700) border-box;
+      animation: borderGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes borderGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+      50% { box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.6); }
+    }
+    
+    .card-special .card-header h3 {
+      color: #4a2c00;
+    }
+    
+    .badge-hafizh {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #ffd700, #ffb347);
+      color: #4a2c00;
+      padding: 4px 10px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    /* Header default (abu-abu kehijauan) */
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 2px solid #2e7d32;
+      text-align: center;
+    }
+    
+    /* Header untuk Banin (Putra) - Hijau tua gradasi hijau muda */
+    .card-header.banin {
+      background: linear-gradient(135deg, #1b5e20, #66bb6a, #1b5e20);
+      border-bottom: 2px solid #ffd700;
+    }
+    
+    /* Header untuk Banat (Putri) - Pink gradasi putih */
+    .card-header.banat {
+      background: linear-gradient(135deg, #c2185b, #f06292, #c2185b);
+      border-bottom: 2px solid #ffd700;
+    }
+    
+    .card-header h3 {
+      font-size: 1.2rem;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 0;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    /* Warna teks untuk card spesial (nilai A) */
+    .card-special .card-header h3 {
+      color: #4a2c00;
+      text-shadow: none;
+    }
+    
+    .card-body { padding: 20px; }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    
+    .info-label {
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .info-value {
+      color: #1e3a2f;
+      font-weight: 500;
+      text-align: right;
+    }
+    
+    .nilai-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+    
+    .nilai-a { background: #4caf50; color: white; }
+    .nilai-b { background: #2196f3; color: white; }
+    .nilai-c { background: #ff9800; color: white; }
+    .nilai-d { background: #f44336; color: white; }
+    
+    .rata-rata {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    
+    .stats {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+    }
+    
+    .filter-badge {
+      background: #e2e8f0;
+      padding: 3px 10px;
+      border-radius: 16px;
+    }
+    
+    .footer {
+      background: #f8fafc;
+      padding: 12px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 11px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.2em; }
+      .tab-btn { padding: 8px 14px; font-size: 11px; }
+      .content { padding: 14px; }
+      .filter-section { padding: 12px; flex-direction: column; }
+      .filter-group { width: 100%; }
+      .logo-circle img { width: 50px; height: 50px; }
+      .cards-grid { grid-template-columns: 1fr; gap: 16px; }
+      .card-header h3 { font-size: 1rem; }
+      .info-row { flex-direction: column; gap: 5px; }
+      .info-value { text-align: left; }
+    }
+    
+    @media print {
+      .sidebar, .hamburger-btn, .tabs, .footer, .filter-section { display: none; }
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .loading-card {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 10px;
+      background: #e9f5e6;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #2d6a4f, #52b788);
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="logo.png" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/60'">
+      <h3>Lajnah Tahfizh</h3>
+      <p>Ma'had Tamaamul Minnah, Bengle - Karawang</p>
+    </div>
+    
+    <div class="sidebar-buttons" id="sidebarNavMenu"></div>
+    
+    <div class="sidebar-footer">
+      <div id="userStatusSidebar" class="user-status-sidebar"></div>
+      <div id="sidebarLoginArea">
+        <div class="sidebar-login-buttons" id="sidebarBtnGroup">
+          <button id="sidebarLoginBtn" onclick="showLoginFormSidebar()">Login</button>
+          <button id="sidebarLogoutBtn" onclick="logout()" style="display:none;" class="logout-btn">Logout</button>
+        </div>
+        <div id="loginFormSidebar" class="login-form-sidebar" style="display:none;">
+          <input type="text" id="loginEmailSidebar" placeholder="Email atau ID">
+          <input type="password" id="loginPasswordSidebar" placeholder="Password">
+          <button onclick="doLoginFromSidebar()">Masuk</button>
+          <button onclick="hideLoginFormSidebar()" class="cancel-login">Batal</button>
+          <div id="loginErrorSidebar" class="error-msg-sidebar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="main-container" id="mainContainer">
+    <div class="container">
+      <div class="header">
+        <button class="hamburger-btn" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+        <div class="logo-circle">
+          <img src="logo.png" alt="Logo" class="header-logo" onerror="this.src='https://via.placeholder.com/70'">
+        </div>
+        <h1>🎓 Alumni Hafizh & Hafizhoh 30 Juz</h1>
+        <h4>Santri Ma'had Tamaamul Minnah, Bengle - Karawang</h4>
+        <button class="header-refresh" onclick="loadAllData()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+      </div>
+      
+      <div class="filter-section">
+        <div class="filter-group">
+          <label>🔍 Cari Nama Santri</label>
+          <input type="text" id="searchInput" placeholder="Ketik nama..." onkeyup="applyFilters()">
+        </div>
+        <div class="filter-group">
+          <label>📅 Filter Tahun Lulus</label>
+          <select id="classFilter" onchange="applyFilters()"><option value="">Semua Tahun</option></select>
+        </div>
+        <div class="filter-group">
+          <button class="reset-btn" onclick="resetFilters()">Reset Filter</button>
+        </div>
+      </div>
+      
+      <div class="tabs" id="tabsContainer"></div>
+      
+      <div class="content">
+        <div id="loadingArea"><div class="loading"><i class="fas fa-calendar-alt"></i><p>Memuat data Alumni...</p></div></div>
+        <div id="errorArea" style="display:none;"></div>
+        <div id="cardsArea" style="display:none;"></div>
+      </div>
+      
+      <div class="footer">
+        <p>© 2026 - Lajnah Tahfizh Banin | Ma'had Tamaamul Minnah, Bengle - Karawang</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // ========== SIDEBAR TOGGLE ==========
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('active');
+      const isOpen = sidebar.classList.contains('open');
+      localStorage.setItem('sidebarState', isOpen ? 'open' : 'closed');
+      if (isOpen) {
+        document.body.classList.add('sidebar-open');
+        hamburgerBtn.innerHTML = '<i class="fas fa-times"></i>';
+      } else {
+        document.body.classList.remove('sidebar-open');
+        hamburgerBtn.innerHTML = '<i class="fas fa-bars"></i>';
+      }
+    }
+    
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('active');
+      document.body.classList.remove('sidebar-open');
+      localStorage.setItem('sidebarState', 'closed');
+      hamburgerBtn.innerHTML = '<i class="fas fa-bars"></i>';
+    }
+    
+    hamburgerBtn.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', closeSidebar);
+    
+    function loadSidebarState() {
+      if (localStorage.getItem('sidebarState') === 'open') {
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.add('active');
+        document.body.classList.add('sidebar-open');
+        hamburgerBtn.innerHTML = '<i class="fas fa-times"></i>';
+      }
+    }
+    
+    // ========== LOGIN ==========
+    const GAS_LOGIN_URL = 'https://script.google.com/macros/s/AKfycbxc4eVb8tWMl2CoJ3XEEK_lu7e917IB2SdzYxJTpATtiimZ69ELCP8GkGNZqEJ85swW6w/exec';
+    let currentUser = null;
+    
+    const menuForRole = {
+      public: [
+        { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'Informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'Nasihat.html' },
+        { id: 'program', label: '📚 Program Tahfiz', type: 'link', url: 'Program Tahfiz.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'link', url: 'Musammi.html' },
+        { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+        { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+        { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'Tajwid.html' },
+        { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+      ],
+      admin_biasa: [
+        { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'Informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'Nasihat.html' },
+        { id: 'program', label: '📚 Program Tahfiz', type: 'link', url: 'Program Tahfiz.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'link', url: 'Musammi.html' },
+        { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+        { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+        { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'Tajwid.html' },
+        { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type: 'link', url: 'Pajangan Jadwal Penguji.html' },
+        { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
+        { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
+        { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+      ],
+      super_admin: [
+        { id: 'home', label: '🏠 Beranda', type: 'link', url: 'index.html' },
+        { id: 'informasi', label: '📢 Informasi Tahfizh', type: 'link', url: 'Informasi.html' },
+        { id: 'nasihat', label: '💡 Nasihat & Motivasi', type: 'link', url: 'Nasihat.html' },
+        { id: 'program', label: '📚 Program Tahfiz', type: 'link', url: 'Program Tahfiz.html' },
+        { id: 'alumni', label: '🎓 Alumni', type: 'link', url: 'Alumni.html' },
+        { id: 'Musammi', label: '💼 Musammi', type: 'link', url: 'Musammi.html' },
+        { id: 'dataJuz', label: '📊 Data Hafalan', type: 'link', url: 'Data Juz.html' },
+        { id: 'halaqoh', label: '📖 Halaqoh', type: 'link', url: 'Halaqoh.html' },
+        { id: 'jadwalUjian', label: '📅 Jadwal Ujian', type: 'link', url: 'Pajangan Jadwal Ujian.html' },
+        { id: 'tajwid', label: '💎 Materi Tajwid', type: 'link', url: 'Tajwid.html' },
+        { id: 'panduan', label: '📘 Panduan Tahfizh', type: 'section', target: 'panduanSection' },
+        { id: 'jadwalPenguji', label: '📋 Jadwal Penguji', type:'link', url: 'Pajangan Jadwal Penguji.html' },
+        { id: 'votingPenguji', label: '🗳️ Voting Penguji', type: 'link', url: 'Voting Penguji.html' },
+        { id: 'buatJadwalUjian', label: '✏️ Buat Jadwal Ujian', type:'link', url: 'Jadwal Ujian Generator.html' },
+        { id: 'buatJadwalPenguji', label: '📝 Buat Jadwal Penguji', type:'link', url: 'Jadwal Penguji Generator.html' },
+        { id: 'Lajnah', label: '💻 Lajnah Tahfidz', type: 'section', target: 'LajnahSection' }
+      ]
+    };
+    
+    function renderNavSidebar() {
+      const navContainer = document.getElementById('sidebarNavMenu');
+      if (!navContainer) return;
+      navContainer.innerHTML = '';
+      let menus = currentUser ? (currentUser.role === 'super_admin' ? menuForRole.super_admin : menuForRole.admin_biasa) : menuForRole.public;
+      menus.forEach(menu => {
+        const btn = document.createElement('button');
+        btn.className = 'sidebar-btn';
+        btn.innerHTML = menu.label;
+        btn.onclick = () => {
+          if (menu.type === 'link') window.location.href = menu.url;
+          else if (menu.type === 'section') {
+            localStorage.setItem('targetSection', menu.target);
+            window.location.href = 'index.html';
+          }
+          closeSidebar();
+        };
+        navContainer.appendChild(btn);
+      });
+    }
+    
+    function showLoginFormSidebar() {
+      document.getElementById('loginFormSidebar').style.display = 'block';
+      document.getElementById('sidebarLoginBtn').style.display = 'none';
+      document.getElementById('loginErrorSidebar').innerHTML = '';
+    }
+    
+    function hideLoginFormSidebar() {
+      document.getElementById('loginFormSidebar').style.display = 'none';
+      document.getElementById('sidebarLoginBtn').style.display = 'block';
+      document.getElementById('loginEmailSidebar').value = '';
+      document.getElementById('loginPasswordSidebar').value = '';
+    }
+    
+    function doLoginFromSidebar() {
+      const login = document.getElementById('loginEmailSidebar').value.trim();
+      const password = document.getElementById('loginPasswordSidebar').value;
+      if (!login || !password) {
+        document.getElementById('loginErrorSidebar').innerHTML = 'Harap isi email/ID dan password';
+        return;
+      }
+      const callbackName = 'jsonp_callback_' + Date.now();
+      window[callbackName] = function(response) {
+        delete window[callbackName];
+        if (response.success) {
+          currentUser = { role: response.role, email: response.email, id: response.id };
+          localStorage.setItem('tahfidz_user', JSON.stringify(currentUser));
+          updateSidebarUI();
+          renderNavSidebar();
+          hideLoginFormSidebar();
+          location.reload();
+        } else {
+          document.getElementById('loginErrorSidebar').innerHTML = response.message || 'Login gagal';
+        }
+      };
+      const url = `${GAS_LOGIN_URL}?callback=${callbackName}&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`;
+      const script = document.createElement('script'); script.src = url; document.body.appendChild(script);
+    }
+    
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('tahfidz_user');
+      updateSidebarUI();
+      renderNavSidebar();
+      location.reload();
+    }
+    
+    function updateSidebarUI() {
+      const userStatusDiv = document.getElementById('userStatusSidebar');
+      const loginBtn = document.getElementById('sidebarLoginBtn');
+      const logoutBtn = document.getElementById('sidebarLogoutBtn');
+      if (currentUser) {
+        userStatusDiv.innerHTML = `🎓 ${currentUser.email} (${currentUser.role === 'super_admin' ? 'Operator' : 'Musammi'})`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+      } else {
+        userStatusDiv.innerHTML = '';
+        loginBtn.style.display = 'block';
+        logoutBtn.style.display = 'none';
+      }
+    }
+    
+    function loadStoredUser() {
+      const stored = localStorage.getItem('tahfidz_user');
+      if (stored) { try { currentUser = JSON.parse(stored); updateSidebarUI(); renderNavSidebar(); } catch(e) {} }
+      else { updateSidebarUI(); renderNavSidebar(); }
+    }
+    
+    // ========== DATA ALUMNI (CARD VIEW) ==========
+    // Struktur sheet: No., Asrama, Nama, Tahun Lulus, Waktu Selesai Diujikan, Rata-rata, Nilai
+    const API_URL = "https://script.google.com/macros/s/AKfycbxUrl6OgWX9_4JGcKMlBuGVrcoGoq9LMmzCdGvX3Fh84pZtQeZvhSWVoKta1iSasx0log/exec";
+    
+    let sheetsList = [];
+    let currentSheet = '';
+    let sheetDataCache = {};
+    let rawData = null;
+    
+    // Index kolom berdasarkan struktur yang Anda berikan
+    const COL_INDEX = {
+      ASRAMA: 1,
+      NAMA: 2,
+      TAHUN_LULUS: 3,
+      WAKTU_SELESAI: 4,
+      RATA_RATA: 5,
+      NILAI: 6
+    };
+    
+function getNilaiClass(nilai) {
+  if (!nilai) return 'nilai-d';
+  const n = nilai.toString().toUpperCase().trim();
+  
+  if (n === 'MUMTAZ') return 'nilai-a';
+  if (n === 'JAYYID JIDDAN') return 'nilai-b';
+  if (n === 'JAYYID') return 'nilai-c';
+  if (n === 'MAQBUL') return 'nilai-d';
+  return 'nilai-d';
+}
+    
+    async function getSheets() {
+      try {
+        const response = await fetch(`${API_URL}?action=getSheets`, { mode: 'cors' });
+        const result = await response.json();
+        return result.sheets || [];
+      } catch(e) { return []; }
+    }
+    
+    async function getSheetData(sheetName) {
+      try {
+        const response = await fetch(`${API_URL}?action=getData&sheetName=${encodeURIComponent(sheetName)}`, { mode: 'cors' });
+        const result = await response.json();
+        return result.data || [];
+      } catch(e) { return []; }
+    }
+    
+    async function loadAllData() {
+      document.getElementById('loadingArea').style.display = 'block';
+      document.getElementById('cardsArea').style.display = 'none';
+      document.getElementById('errorArea').style.display = 'none';
+      
+      sheetsList = await getSheets();
+      if (sheetsList.length === 0) {
+        document.getElementById('loadingArea').style.display = 'none';
+        document.getElementById('errorArea').style.display = 'block';
+        document.getElementById('errorArea').innerHTML = '<div class="error">❌ Tidak ada sheet ditemukan</div>';
+        return;
+      }
+      
+      for (const sheetName of sheetsList) {
+        sheetDataCache[sheetName] = await getSheetData(sheetName);
+      }
+      
+      createTabs(sheetsList);
+      currentSheet = sheetsList[0];
+      await switchToSheet(currentSheet);
+    }
+    
+    function createTabs(sheetNames) {
+      const tabsContainer = document.getElementById('tabsContainer');
+      tabsContainer.innerHTML = '';
+      sheetNames.forEach((sheetName, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn';
+        if (index === 0) btn.classList.add('active');
+        btn.textContent = sheetName;
+        btn.onclick = () => switchSheet(sheetName, btn);
+        tabsContainer.appendChild(btn);
+      });
+    }
+    
+    async function switchSheet(sheetName, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSheet = sheetName;
+      await switchToSheet(sheetName);
+    }
+    
+    async function switchToSheet(sheetName) {
+      const sheetData = sheetDataCache[sheetName];
+      if (!sheetData) return;
+      
+      rawData = sheetData;
+      
+      document.getElementById('searchInput').value = '';
+      
+      // Update filter tahun lulus
+      updateTahunFilter();
+      
+      renderCards();
+      document.getElementById('loadingArea').style.display = 'none';
+      document.getElementById('cardsArea').style.display = 'block';
+    }
+    
+    function updateTahunFilter() {
+      if (!rawData || rawData.length < 2) return;
+      const tahunFilter = document.getElementById('classFilter');
+      const uniqueTahun = new Set();
+      for (let i = 1; i < rawData.length; i++) {
+        const tahun = rawData[i][COL_INDEX.TAHUN_LULUS];
+        if (tahun && tahun.toString().trim()) uniqueTahun.add(tahun.toString().trim());
+      }
+      tahunFilter.innerHTML = '<option value="">Semua Tahun</option>';
+      Array.from(uniqueTahun).sort().reverse().forEach(t => {
+        tahunFilter.innerHTML += `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`;
+      });
+    }
+    
+    function getFilteredData() {
+      if (!rawData || rawData.length < 2) return [];
+      
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      const tahunFilter = document.getElementById('classFilter').value;
+      
+      let filtered = [];
+      for (let i = 1; i < rawData.length; i++) {
+        const row = rawData[i];
+        let match = true;
+        
+        if (tahunFilter) {
+          const rowTahun = row[COL_INDEX.TAHUN_LULUS];
+          if (!rowTahun || rowTahun.toString().trim() !== tahunFilter) match = false;
+        }
+        
+        if (match && searchTerm) {
+          const rowNama = row[COL_INDEX.NAMA];
+          if (!rowNama || !rowNama.toString().toLowerCase().includes(searchTerm)) match = false;
+        }
+        
+        if (match) {
+          filtered.push({
+            asrama: row[COL_INDEX.ASRAMA] || '-',
+            nama: row[COL_INDEX.NAMA] || 'Tidak diketahui',
+            tahunLulus: row[COL_INDEX.TAHUN_LULUS] || '-',
+            waktuSelesai: row[COL_INDEX.WAKTU_SELESAI] || '-',
+            rataRata: row[COL_INDEX.RATA_RATA] || '-',
+            nilai: row[COL_INDEX.NILAI] || '-',
+            originalIndex: i
+          });
+        }
+      }
+      
+      return filtered;
+    }
+    
+    function renderCards() {
+      const container = document.getElementById('cardsArea');
+      const data = getFilteredData();
+      
+      if (data.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
+            <i class="fas fa-database" style="font-size: 48px; color: #ef4444; margin-bottom: 16px; display: block;"></i>
+            <h3 style="color: #991b1b; margin-bottom: 8px;"> Halaqoh belum tersedia</h3>
+            <p style="color: #7f1d1d; margin-bottom: 16px;">Saat ini belum ada data Halaqoh Santri.</p>
+            <p style="color: #b91c1c; font-size: 13px;"><i class="fas fa-envelope"></i> Silakan hubungi admin untuk menambahkan data.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '<div class="cards-grid">';
+      data.forEach(alumni => {
+        const isSpecial = alumni.nilai && (alumni.nilai.toString().toUpperCase() === 'Mumtaz' || alumni.nilai.toString().toUpperCase() === 'Mumtaz');
+        const cardClass = isSpecial ? 'card card-special' : 'card';
+        const nilaiClass = getNilaiClass(alumni.nilai);
+        const emoji = isSpecial ? '👑 ' : '🎓 ';
+        
+        // Deteksi asrama untuk menentukan class header
+        let headerClass = '';
+        const asramaLower = alumni.asrama ? alumni.asrama.toString().toLowerCase() : '';
+        if (asramaLower.includes('banin') || asramaLower.includes('putra') || asramaLower.includes('laki')) {
+          headerClass = 'banin';
+        } else if (asramaLower.includes('banat') || asramaLower.includes('putri') || asramaLower.includes('perempuan')) {
+          headerClass = 'banat';
+        }
+        
+        html += `<div class="${cardClass}">`;
+        html += `<div class="card-header ${headerClass}"><h3>${emoji} ${escapeHtml(alumni.nama)}`;
+        if (isSpecial) {
+          html += `<span class="badge-hafizh"><i class="fas fa-star"></i> Mumtaz 🏆</span>`;
+        }
+        html += `</h3></div><div class="card-body">`;
+        
+        html += `<div class="info-row"><span class="info-label"><i class="fas fa-building"></i> Asrama</span><span class="info-value">${escapeHtml(alumni.asrama)}</span></div>`;
+        html += `<div class="info-row"><span class="info-label"><i class="fas fa-calendar-alt"></i> Tahun Lulus</span><span class="info-value">${escapeHtml(alumni.tahunLulus)}</span></div>`;
+        html += `<div class="info-row"><span class="info-label"><i class="fas fa-clock"></i> Waktu Selesai Diujikan</span><span class="info-value">${escapeHtml(alumni.waktuSelesai)}</span></div>`;
+        html += `<div class="info-row"><span class="info-label"><i class="fas fa-chart-line"></i> Rata-rata</span><span class="info-value rata-rata">${escapeHtml(alumni.rataRata)}</span></div>`;
+        html += `<div class="info-row"><span class="info-label"><i class="fas fa-medal"></i> Nilai</span><span class="info-value"><span class="nilai-badge ${nilaiClass}">${escapeHtml(alumni.nilai)}</span></span></div>`;
+        
+        html += `</div></div>`;
+      });
+      html += '</div>';
+      
+      const searchTerm = document.getElementById('searchInput').value;
+      const tahunFilter = document.getElementById('classFilter').value;
+      let filterText = '';
+      if (searchTerm && tahunFilter) filterText = `🔍 "${searchTerm}" + Tahun: ${tahunFilter}`;
+      else if (searchTerm) filterText = `🔍 "${searchTerm}"`;
+      else if (tahunFilter) filterText = `📚 Tahun: ${tahunFilter}`;
+      
+      const statsHtml = `<div class="stats">
+        <span>📊 <strong>${data.length} Alumni</strong></span>
+        <span>🕒 Update: ${new Date().toLocaleString('id-ID')}</span>
+        ${filterText ? `<span class="filter-badge">${filterText}</span>` : ''}
+      </div>`;
+      
+      container.innerHTML = statsHtml + html;
+    }
+    
+    function applyFilters() { if (rawData) renderCards(); }
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('classFilter').value = '';
+      if (rawData) renderCards();
+    }
+    
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // ========== INIT ==========
+    loadSidebarState();
+    loadStoredUser();
+    loadAllData();
+  </script>
+</body>
+</html>
